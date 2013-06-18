@@ -1,0 +1,232 @@
+<include file="Include:header" />
+<script src="__PUBLIC__/js/initcity.js" type="text/javascript"></script>
+<script language="javascript">
+$(function(){
+	pc_init();
+	//按钮提交
+    Maya.BindEvent(_("submit_btn"),"click",function(){
+    	submitForm();	
+	});
+    //回车提交
+    Maya.BindEvent(document.body,"keydown",function(e){
+            //如果是回车键
+            var e=event || e;
+            if(e.keyCode==13){
+            	submitForm();	
+            }
+    });
+})
+function submitForm(){
+	Maya.Msg({
+	    msg : "正在提交中，请稍后....",
+	    sec : 1.5,
+  	});
+    $.post(
+            "<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+            $("#form").formSerialize(),
+            function(data){
+                    if(data.data == "success"){
+                            Maya.Msg({
+                                    type : "success",
+                                    msg : data.info,
+                                    sec : 1.5,
+                                    call : function(){
+                                        top.location="<?=U("Index/index")?>";
+                                    }
+                            });
+                    }else{
+                            Maya.Msg({
+                                    type : "fail",
+                                    msg : data.info
+                            });
+                    }
+            },
+            "json"
+    );
+	return false;
+}
+</script>
+<style type="text/css">
+<!--
+.cont-attr {
+	margin: 0;
+	width: 500px;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+	padding: 0;
+}
+
+.cont-attr .attr {
+	overflow: hidden;
+	height: 40px;
+	border-bottom: none;
+}
+
+.cont-attr .attr p {
+	overflow: hidden;
+}
+
+.cont-attr .desc {
+	height: 25px;
+}
+
+.cont-attr .attr .label{
+	padding: 0 15px 0 0;
+	line-height: 35px;
+	background-color: transparent;
+	margin: 0 0 0 5px;
+	width: 120px;
+	text-align: right;
+	float: left;
+}
+
+.cont-attr .attr .input{
+	margin: 0 0 0 5px;
+	line-height: 35px;
+	text-align: left;
+}
+
+.cont-attr .desc .label  {
+	line-height: 20px;
+}
+
+.cont-attr .desc .input{
+	line-height: 20px;
+}
+
+.input_text {
+	width: 300px;
+	height: 30px;
+}
+-->
+</style>
+<include file="Include:toper" />
+<div class="navigator"
+	style="margin: 0 auto; padding-top: 20px; *zoom: 1; position: relative;">
+	<div class="main_panel" style="clear: both;">
+		<div class="accordion-body">
+			<div id="register">
+				<div
+					style="margin: 20px 0; border-bottom: 1px solid #dedede; font-size: 25px; text-align: center; padding: 0 260px 5px 0;">
+					用户注册</div>
+				<form id="form" name="form">
+					<ul class="cont-attr" style="margin: 0 auto;">
+						<li class="attr">
+							<p>
+								<span class="label"><span class="mustIn">*</span>&nbsp;用户名：</span>
+								<span class="input"><input name="name" type="text"
+									class="input_text easyui-validatebox" data-options="required:true,validType:'length[5,20]'" id="name" /> </span>
+							</p>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（5-20位，字母、数字、下划线）</span>
+							</p>
+						</li>
+						<li class="attr">
+								<span class="label"><span class="mustIn">*</span>&nbsp;密 码：</span>
+								<span class="input"><input name="pwd" type="password"
+									class="input_text easyui-validatebox" data-options="required:true,validType:'length[5,20]'" id="pwd" /> </span>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（6-20位，字母、数字）</span>
+							</p>
+						</li>
+						<li class="attr">
+								<span class="label"><span class="mustIn">*</span>&nbsp;重复密码：</span>
+								<span class="input"> <input name="new_pwd" type="password"
+									class="input_text" id="new_pwd" />
+								</span>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（确保您记住密码。）</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label"><span class="mustIn">*</span>&nbsp;公司名称:</span>
+								<span class="input"> <input id="company" name="company"
+									type="text" class="input_text" />
+								</span>
+							</p>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（贵公司名称）</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label">所在地区：</span> <span class="input">
+								<select id="province" name="province"></select>
+								<select id="city" name="city"></select>
+								</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label">公司电话：</span> <span class="input"><input
+									name="tel" type="text" class="input_text" id="tel" /> </span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label"><span class="mustIn">*</span>&nbsp;联系人：</span>
+								<span class="input"><input name="manager" type="text"
+									class="input_text" id="manager" /> </span>
+							</p>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（联系人姓名）</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label"><span class="mustIn">*</span>&nbsp;联系人电话：</span>
+								<span class="input"><input name="phone" type="text"
+									class="input_text" id="phone" /> </span>
+							</p>
+						</li>
+						<li class="attr desc">
+							<p>
+								<span class="label">&nbsp;</span>
+								<span class="input">（联系人电话）</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label">公司地址：</span> <span class="input"><input
+									name="addr" type="text" class="input_text" id="addr" /> </span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label"><span class="mustIn">*</span>&nbsp;常用邮箱：</span> <span class="input"><input
+									name="email" type="text" class="input_text" id="email" /> </span>
+							</p>
+						</li>
+					</ul>
+					<div class="clear"></div>
+					<div style="text-align: center; padding: 20px 0 20px 50px;">
+						<!-- <label><input {$check} name="isremember" type="checkbox"
+							id="isremember" value="true"> 记住密码</label> -->
+						<a href="#" id="submit_btn" name="submit_btn" class="button"
+							style="width: 120px;font-size: 16px; padding: 8px 0;">注&nbsp;&nbsp;册</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<include file="Include:footer" />

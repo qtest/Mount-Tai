@@ -1,0 +1,91 @@
+<include file="Include:header" /> <script language="javascript">
+$(document).ready(function(){
+});
+</script>
+
+<div class="content">
+<?php if($_GET['type']):?>
+	<table width="100%" border="0" cellpadding="3" cellspacing="1" class="tb_big" >
+		<tbody>
+			<tr>
+				<td width="15%" align="right">计价公司：</td>
+				<td width="41%">无锡市宸铭商务印刷有限公司</td>
+				<td width="11%" align="right">报价时间：</td>
+				<td width="33%">2013-3-5 11:04:40</td>
+			</tr>
+			<tr>
+				<td align="right">报价项目：</td>
+				<td>信纸表格报价</td>
+				<td align="right">最终报价：</td>
+				<td class="red">￥5700</td>
+			</tr>
+
+			<tr>
+				<td align="right">印刷参数：</td>
+				<td colspan="3">
+					<table width="100%" border="0" cellspacing="1" class="tb">
+						<tbody>
+							<tr>
+								<th width="12%" align="right">成品尺寸：</th>
+								<td width="32%">210×140</td>
+								<th width="17%" align="right">单 双 面：</th>
+								<td width="39%">单面印刷</td>
+							</tr>
+							<tr>
+								<th align="right">印刷数量：</th>
+								<td>2000</td>
+								<th align="right">材料名称：</th>
+								<td>双胶纸</td>
+							</tr>
+							<tr>
+								<th align="right">印刷颜色：</th>
+								<td>单色</td>
+								<th align="right">材料克重：</th>
+								<td>70克</td>
+							</tr>
+
+							<tr>
+								<th align="right">每本页数：</th>
+								<td colspan="3">100页/本</td>
+							</tr>
+
+							<tr>
+								<th align="right">后道工序：</th>
+								<td colspan="3">装订(20开-50开), 打号码, 压痕压点线, 内容到边</td>
+							</tr>
+						</tbody>
+					</table></td>
+			</tr>
+
+		</tbody>
+	</table>
+	<?php else:?>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0"
+		class="tb tblGrid">
+		<thead>
+			<tr bgcolor="#CCCCCC">
+				<!-- 会员号 用户名 所在组 公司名称 地区 联系人 QQ 登录/报价  -->
+				<th width="30" align="center"></th>
+				<th align="left" width="100"><strong>会员名称</strong></th>
+				<th align="center" width="150"><strong>交易日期</strong></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+	$i = 0;
+	foreach ( $recordArr as $row ) :
+		$i ++;
+		$bg = $i % 2 == 0 ? 'bgcolor="#FAFAFA"' : "";
+		?>
+				<tr>
+				<td align="center"><?=$i?></td>
+				<td align="left"><?= $row['u_name'] ?></td>
+				<td align="center"><?= $row['r_date'] ?></td>
+			</tr>
+			<?php endforeach; ?>
+        </tbody>
+	</table>
+	<?php endif;?>
+</div>
+</body>
+</html>

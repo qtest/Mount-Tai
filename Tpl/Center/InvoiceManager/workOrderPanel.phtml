@@ -1,0 +1,160 @@
+<include file="Include:header" />
+<style>
+body {
+	font-size: 16px;
+}
+
+.tbb {
+	border-collapse: collapse;
+}
+
+.tbb td {
+	padding:5px;
+	font-size: 16px;
+	border: 2px solid #999;
+}
+
+.text {
+	border: 0px none;
+	background-color: transparent;
+	font-size: 16px;
+}
+.input_text{width:95%;}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+	<?php if($_GET['type'] == "edit"):?>
+	$("#customer").val("<?=$row['customer']?>");
+	$("#expire_date").val("<?=$row['expire_date']?>");
+	$("#label_name").val("<?=$row['label_name']?>");
+	$("#paper_attr").val("<?=$row['paper_attr']?>");
+	$("#cus_size").val("<?=$row['cus_size']?>");
+	$("#finel_unit").val("<?=$row['finel_unit']?>");
+	$("#number").val("<?=$row['number']?>");
+	$("#true_size").val("<?=$row['true_size']?>");
+	$("#paper_unit").val("<?=$row['paper_unit']?>");
+	$("#paper_amount").val("<?=$row['paper_amount']?>");
+	$("#process").val("<?=$row['process']?>");
+	$("#comment").html("<?=$row['comment']?>");
+	<?php endif;?>
+});
+function submitForm(w){
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							w.close();
+						}
+					});
+				}else{
+					Maya.Msg(data.info);
+				}
+			},
+			"json"
+		);
+}
+</script>
+<body>
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" style="display: none" id="order_id" name="order_id" value="<?=$_GET['id']?>">
+		<input type="hidden" style="display: none" id="type" name="type" value="<?=$_GET['type']?>">
+		<?php if($_GET['type'] == "edit"):?>
+			<input type="hidden" style="display: none" id="id" name="id" value="<?=$row['id']?>">
+		<?php endif;?>
+		<div
+			style="position: absolute; top: 10px; left: 20px; height: 60px; width: 300px; color: #ABABAB; text-align: left;">
+			<h3 style="font-size: 16px;">
+      			<?=C('MYCOMPANY')?>
+    		</h3>
+			<span style="margin: 0 0 0 30px;font-size: 12px;">因为专业，所以放心</span>
+		</div>
+		<div
+			style="padding: 25px 30px 5px 30px; color: #444; text-align: right; font-size: 13px;">
+			<h2 style="font-size: 20px; Letter-spacing: 20px;text-align: center;">加工单</h2>
+			<span style="margin: 0 0 0 30px;">&nbsp;&nbsp;<?=date("Y 年 m 月 d 日")?></span>
+		</div>
+		<div class="content" style="padding-top: 0;">
+			<table width="100%" border="2" cellpadding="0" cellspacing="0" class="tbb" bordercolor="#666666">
+				<tr>
+					<td width="80" height="35" align="center" valign="middle"><strong>客户名称</strong></td>
+					<td valign="middle" colspan="3">
+							<input id="customer" name="customer" type="text" class="input_text" value="<?=$row['customer']?>" />
+					</td>
+					<td width="80" align="center" valign="middle"><strong>交货日期</strong></td>
+					<td width="150" valign="middle">
+						<input name="expire_date" type="text" class="input_text easyui-datebox" style="width:150px;" id="expire_date" value="<?=date ( "Y-m-d", strtotime ( "+3 day" ) )?>" />
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>文件名称</strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<input type="text" id="label_name"  name="label_name" class="input_text" value="<?=$row['p_name']?>" />
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>纸张要求</strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<input type="text" id="paper_attr"  name="paper_attr" class="input_text" value="<?=$row['attrInfo']?>" />
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>成品尺寸</strong></td>
+					<td valign="middle">
+						<input type="text" id="cus_size"  name="cus_size" class="input_text" value="<?=$row['o_size']?>" />
+					</td>
+					<td width="80" align="center" valign="middle"><strong>单位</strong></td>
+					<td width="80" valign="middle" align="center">
+						<input type="text" id="finel_unit"  name="finel_unit" class="input_text" value="<?=$row['unit_name']?>" />
+					</td>
+					<td width="80" align="center" valign="middle" align="center"><strong>印刷数量</strong></td>
+					<td width="80" valign="middle">
+						<input type="text" id="number" name="number" class="input_text" value="<?=$row['o_amount']?>" />
+					</td>
+				</tr>
+
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>开料尺寸</strong></td>
+					<td valign="middle">
+						<input type="text" id="true_size"  name="true_size" class="input_text" value="<?=$row['o_size']?>" />
+					</td>
+					<td align="center" valign="middle"><strong>单位</strong></td>
+					<td  valign="middle">
+						<input type="text" id="paper_unit"  name="paper_unit" class="input_text" value="张" />
+					</td>
+					<td align="center" valign="middle"><strong>纸张数量</strong></td>
+					<td valign="middle">
+						<input type="text" id="paper_amount"  name="paper_amount" class="input_text" value="<?=$row['paper_amount']?>" />
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>后加工： </strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<input type="text" id="process"  name="process" class="input_text" value="<?=$row['processInfo']?>" />
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" colspan="6" height="100">
+						<table style="width: 100%;border:0;">
+							<tr>
+								<td valign="top" width="80"  style="border:0;"><strong>其它要求：</strong></td>
+								<td align="left" style="border:0;"><textarea name="comment" id="comment" class="input_text"
+										cols="45" rows="5" style="height: 80px; width: 80%;border:1px solid #ccc;"><?=$row['comment']?></textarea></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

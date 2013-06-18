@@ -1,0 +1,176 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+</script>
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.cont-attr {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+}
+
+.cont-attr li {
+	line-height: 30px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	
+}
+
+.cont-attr .attr p {
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .attr p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .attr p .input {
+	font-weight: 800;
+	font-size: 14px;
+	line-height: 30px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process {
+	width: 48%;
+	float: left;
+}
+
+.cont-attr .process p {
+	margin: 0 3px 3px 0;
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .process p .input {
+	font-size: 14px;
+	font-weight: 700;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+</style>
+</head>
+<body style="background: none;">
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+		<div style="height: 60px; text-align: center; padding-top: 10px;">
+			<h3 style="font-size: 20px; text-align: center"><?=C('MYCOMPANY')?></h3>
+			<b>日期：</b><span><?=date('Y 年 m 月 d 日')?></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>编号：</b><span><?=$rs['o_number']?></span>
+		</div>
+		<div id="form_add_point" class="content">
+			<div class="easyui-panel" title=""
+				style="padding: 10px; overflow: hidden;">
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<b
+								style="font-size: 18px; line-height: 35px; float: left; margin: 0 0 0 10px;"><?=$rs['p_name']?></b>
+							<span>报价时间:&nbsp;&nbsp;<?=$rs['o_date']?></span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">数量</span> <span class="input"><?=$rs['o_amount']?></span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">尺寸</span> <span class="input"><?=$rs['o_size']?></span>
+						</p>
+					</li>
+						<?php for ($i=0;$i < count($attrArr);$i++):?>
+					<li class="process">
+						<p>
+							<span class="label"><?=$attrArr[$i]['a_name']?></span> <span
+								class="input"><?=$attrValue[$i]?></span>
+						</p>
+					</li>
+						<?php endfor;?>
+				</ul>
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<span class="label">后加工工序</span> <span class="input"><?=$processInfo?></span>
+						</p>
+					</li>
+				</ul>
+			</div>
+			<div class="cleaner_h10"></div>
+			<div class="easyui-panel" title=""
+				style="padding: 10px; overflow: hidden;">
+				<ul class="cont-attr">
+					<li class="process">
+						<p>
+							<span class="label">后加工费用</span> <span class="input">￥ <?=$rs['o_pro_price']?> 元</span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">纸价</span> <span class="input">￥ <?=$rs['o_papePrice']?> 元</span>
+						</p>
+					</li>
+					<?php if($_SESSION ['cmp']['g_manager'] == 1):?>
+					<li class="process">
+						<p>
+							<span class="label">成本费用</span> <span class="input">￥ <?=$rs['o_cost']?> 元</span>
+						</p>
+					</li>
+					<?php else:?>
+					<li class="process">
+						<p>
+							<span class="label">单价</span> <span class="input">￥ <?=getCheckNum4Float($rs['o_price']/$rs['o_amount'])?> 元</span>
+						</p>
+					</li>
+					<?php endif;?>
+					<li class="process">
+						<p>
+							<span class="label">印刷费</span> <span class="input">￥ <?=$rs['o_price'] - $rs['o_pro_price']?> 元</span>
+						</p>
+					</li>
+				</ul>
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<span class="label" style="font-weight: 700;">总费用</span> <span
+								class="input" style="font-size: 20px; color: #ff0000;">￥ <?=$rs['o_price']?> 元</span>
+						</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</form>
+</body>
+</html>

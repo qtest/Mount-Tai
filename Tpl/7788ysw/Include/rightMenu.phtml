@@ -1,0 +1,162 @@
+<script type="text/javascript">
+		$(function(){
+			$("#tt2").tree({
+       			method:'GET',
+                animate: true,
+               // lines:true,
+                url : "<?=U('Index/getJosnData4Index')?>",
+				onLoadError:function(){
+					parent.Maya.Msg("视频设备列表加载失败，请稍后再试。");
+				},
+				onBeforeExpand:function(node){
+					$('#tt2').tree('options').url = "<?=U('Index/getJosnData4Index')?>/id/"+node.id+"/type/"+node.attributes;
+					//alert("index.php?s=/System/treeJson/id/"+node.id+"/type/"+node.attributes);
+				},
+				onClick:function(node){
+                	if(node.attributes == 'rcu' ){
+                		addTab(node.text, "<?=U('Report/dashboardView/')?>/id/"+node.id);
+                    }else{
+                    	$(this).tree('toggle', node.target);
+                    }
+				}
+            });
+		});
+</script>
+<div class="easyui-accordion" data-options="fit:true,border:false"
+	style="background: 0 !important; padding: 0px;">
+	<div title="报价项目设置" iconCls="icon"
+		style="padding: 0px;">
+		<ul>
+			<?php foreach($proArr as $row):?>
+				<li>
+					<div>
+						<a link="<?=U('Prefer/index').'/id/'.$row['id']?>"><span
+							class="icon icon-log"></span><?=$row['p_name']?>设置</a>
+					</div>
+				</li>
+			<?php endforeach;?>
+		</ul>
+	</div>
+	<div title="基础资料管理" iconCls="icon" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Product/index')?>"><span class="icon icon-log"></span>报价项目管理</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Paper/index')?>"><span class="icon icon-log"></span>纸张规格设置</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Machine/index')?>"><span class="icon icon-log"></span>通用印刷机设置</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Process/index')?>"><span class="icon icon-log"></span>后加工设置</a>
+				</div>
+			</li>
+			<!-- <li>
+				<div>
+					<a link="<?=U('Product/paperLoss')?>"><span class="icon icon-log"></span>损耗设置</a>
+				</div>
+			</li> -->
+			<li>
+				<div>
+					<a link="<?=U('Service/index')?>"><span class="icon icon-log"></span>账户设置</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div title="会员管理" iconCls="icon" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Manager/index')?>"><span class="icon icon-log"></span>会员列表</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Manager/uGroup')?>"><span class="icon icon-log"></span>会员组设置</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Manager/chargeManey')?>"><span class="icon icon-log"></span>会员充值</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Statistics/chartAdmin')?>"><span
+						class="icon icon-log"></span>会员充值统计</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- <div title="数据查询" iconCls="icon" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Department/index')?>"><span class="icon icon-log"></span>下单统计</a>
+				</div>
+			</li>
+		</ul>
+	</div> -->
+	<div title="单据管理" iconCls="icon" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Department/index')?>"><span class="icon icon-log"></span>会员报价记录</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Department/index')?>"><span class="icon icon-log"></span>订单统计</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Department/index')?>"><span class="icon icon-log"></span>加工单</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Department/index')?>"><span class="icon icon-log"></span>送货单</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div title="系统设置" iconCls="icon" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Manager/managerList')?>"><span
+						class="icon icon-log"></span>系统用户管理</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('System/index')?>"><span class="icon icon-log"></span>系统参数管理</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('System/emailInfo')?>"><span class="icon icon-log"></span>邮件提醒设置</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('System/adInfo')?>"><span class="icon icon-log"></span>广告管理</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('System/emailSend')?>"><span class="icon icon-log"></span>邮件发送</a>
+				</div>
+			</li><!--  -->
+		</ul>
+	</div>
+</div>

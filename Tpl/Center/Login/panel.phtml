@@ -1,0 +1,67 @@
+<include file="Include:Header" />
+<script language="javascript">
+function submitForm(w){
+	if($.trim($("#login_name").val())=="" || $.trim($("#login_name").val())=="用户名"){
+		Maya.Msg("请填写 <strong>用户名</strong>");
+		return false;	
+	}
+	if($.trim($("#login_pwd").val())=="" || $.trim($("#login_pwd").val())=="登录密码登录密码"){
+		Maya.Msg("请填写 <strong>密码</strong>");
+		return false;	
+	}
+	Maya.Msg({
+	    msg : "正在登录中，请稍后....",
+	    sec : 1.5
+  	});
+    $.post(
+    		"<?=U(MODULE_NAME.'/loginCheck')?>",
+            $("#loginForm").formSerialize(),
+            function(data){
+                    if(data.data=="success"){
+                            Maya.Msg({
+                                    type : "success",
+                                    msg : data.info,
+                                    sec : 1.5,
+                                    call : function(){
+                                        parent.window.location="<?=U("Index/index")?>";
+                                    }
+                            });
+                    }else{
+                            Maya.Msg({
+                                    type : "fail",
+                                    msg : data.info
+                            });
+                    }
+            },
+            "json"
+    );
+	return false;
+}
+</script>
+</head>
+<body>
+<div class="content">
+	<form id="loginForm" name="loginForm">
+		<div class="form_pad_10">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="75" height="30" align="right">用户名：</td>
+					<td><input name="login_name" type="text" class="input_text login_text"
+						id="login_name" value="{$uid}" /></td>
+				</tr>
+				<tr>
+					<td height="30" align="right">密 码：</td>
+					<td><input name="login_pwd" type="password" class="input_text login_text"
+						id="login_pwd" value="{$pwd}" /></td>
+				</tr>
+				<tr>
+					<td height="30" align="center">&nbsp;</td>
+					<td><label><input {$check} name="isremember" type="checkbox"
+							id="isremember" value="true"> 记住密码</label> <!-- <a href="" onclick="regisBtn('<?=U ( "Manager/register" )?>')" >免费注册</a> --></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<include file="Include:header" />
+<style type="text/css">
+html {
+	background: #fff;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	//setCheckBox("main_ched","ched");
+	$('.p_price').numberbox({min:0,precision:2});
+});
+function submitCheck(type){
+	if(type == "edit"){
+		if($('#idEdit').val() == ""){
+			Maya.Msg("请选择 <b>可选项</b> ！");
+			return;
+		}
+	}
+	if($("#p_name").val()==""){
+		Maya.Msg("<strong>可选项</strong> 不能为空");
+		return;
+	}
+	$.post(
+			"<?=U('Process/actionCheckIndex')?>",
+			{
+				type:type,
+				id:$('#idEdit').val(),
+				parent_id:$('#parent_id').val(),
+				p_name:$('#p_name').val(),
+				p_price:$('#p_price').val(),
+				p_minFee:$('#p_minFee').val(),
+				p_otherFee:$('#p_otherFee').val(),
+				p_desc:$("#p_desc").val()
+			},
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							location.reload();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+function  del(id){
+	new Maya.Box({
+		text : "删除记录",
+		chtml : "确定要删除该记录吗？",
+		win : parent,
+		isAlert : true,
+		iframeAuto : false,
+		overlayAlpha : .5,
+		iframeScroll : "auto",
+		inlineAuto : false,
+		type : "inline",
+		btns : [
+			{
+				text : "确定"	,
+				onClick : function(w){
+					$.get(
+							"<?=U("Process/actionCheckIndex")?>",
+							{
+								type:'del',
+								id:id
+							},
+							function(data){
+								if(data.status=="1"){
+									parent.Maya.Msg({
+										type : "success",
+										msg : "操作成功",
+										call : function(){
+											w.close();
+											//freshIframe();
+											location.reload();
+										}
+									});	
+								}else{
+									parent.Maya.Msg({
+				                       type : "fail",
+				                       msg : data.info
+				               		});
+								}
+							},
+							"json"
+						);
+  	       		 }
+			},
+			{
+				text : "取消"	,
+				isCancel : true
+			}
+		]
+	});	
+}
+function editPlus(id,p_name, p_price, p_minFee, p_otherFee, p_desc){
+	$('#idEdit').val(id);
+	$('#p_name').val(p_name);
+	$('#p_price').val(p_price);
+	$('#p_minFee').val(p_minFee);
+	$('#p_otherFee').val(p_otherFee);
+	$("#p_desc").val(p_desc);
+}
+
+function submitForm(w){
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							location.reload();	
+							//w.close();
+							//console.info("1111");
+							//freshIframe();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+</script>
+<div id="form_add_point" class="content">
+	<div id="prefer" class="easyui-panel" title="设置" collapsible="true" collapsed="true" style="margin-bottom:5px;height:150px;">
+		<form id="myform" name="myform">
+			<input type="hidden" name="idEdit" id="idEdit" value="" />
+			<table border="0" cellpadding="0" cellspacing="0"
+				style="margin: 5px;">
+				<tr>
+					<td width="80" height="30" align="right">可选项名称：</td>
+					<td><input type="text" name="p_name" id="p_name" class="input_text"
+						style="width: 200px;" /></td>
+					<td height="30" align="right">单价：</td>
+					<td><input type="text" name="p_price" id="p_price"
+						class="input_text p_price" value="" /> 元</td>
+					<td rowspan="3" width="100" align="right"><a href="#"
+						class="easyui-linkbutton" iconCls="icon-edit"
+						style="margin-bottom: 5px; display: inline-block;"
+						onclick="submitCheck('edit')">修改</a><a href="#"
+						class="easyui-linkbutton" iconCls="icon-add"
+						onclick="submitCheck('add')">添加</a></td>
+				</tr>
+					<tr>
+						<td height="30" align="right">起步价：</td>
+						<td><input type="text" name="p_minFee" id="p_minFee" class="input_text p_price" value="" /> 元</td>
+						<td width="100" align="right">其它费用：</td>
+						<td><input type="text" name="p_otherFee" id="p_otherFee" class="input_text p_price" value="" /> 元</td>
+					</tr>
+				<tr>
+					<td height="45" align="right">备注：</td>
+					<td colspan="3"><textarea id="p_desc" name="p_desc"
+							class="input_text" style="width: 95%; height: 40px;"></textarea></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div class="easyui-panel" title="规格列表" collapsible="true" fit="true"
+		style="height: 300px; background: #fafafa;">
+		<form id="form" name="form">
+			<input type="hidden" name="parent_id" id="parent_id"
+				value="<?=$_GET['id']?>" />
+			<table style="width: 100%;" border="0" cellspacing="0"
+				cellpadding="0" class="tb">
+				<thead>
+					<tr>
+						<th height="30" width="30">启用</th>
+						<th width="150" align="center">工序名称</th>
+						<th width="120" align="center">可选项名称</th>
+						<th width="80" align="center">单价</th>
+						<th width="150" align="center">更新时间</th>
+						<th width="150" align="center">备注</th>
+						<th width="80" align="center">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach($proArr as $row): //count($camArr)?>
+					<tr>
+						<td height="30" align="center"><input type="checkbox"
+							name="ched[]" id="ched_<?=$row['id']?>"
+							<?=$row['p_status'] == 1 ? "checked = 'true'" : ""?>
+							value="<?=$row['id']?>" /></td>
+						<td align="center"><?=$row['parent_name']?></td>
+						<td align="center"><?=$row['p_name']?></td>
+						<td align="center"><input type="hidden" name="id[]"
+							value="<?=$row['id']?>" /> <input type="text"
+							class="input_text p_price" style="width: 50px;"
+							id="price_<?=$row['id']?>" name="price[]"
+							value="<?=$row['p_price']?>" /></td>
+						<td align="center"><?=$row['p_lastDate']?></td>
+						<td align="center"><?=$row['p_desc']?></td>
+						<td align="center"><a href="#" title="修改"
+							onclick="$('#prefer').panel('expand',true);editPlus(<?=$row['id']?>,'<?= $row['p_name'] ?>','<?= $row['p_price'] ?>','<?= $row['p_minFee'] ?>','<?= $row['p_otherFee'] ?>','<?= $row['p_desc'] ?>')"
+							class="easyui-linkbutton" plain="true" iconCls="icon-edit"></a> <a
+							href="#" title="删除" onclick="del(<?=$row['id']?>)"
+							class="easyui-linkbutton" plain="true" iconCls="icon-cancel"></a></td>
+					</tr>
+					<?php endforeach;?>
+				</tbody>
+			</table>
+		</form>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<include file="Include:header" />
+<style type="text/css">
+html {
+	background: none;
+}
+
+.tbb {
+	border-collapse: collapse;
+}
+
+.gray {
+	font-weight: bold;
+	background: #f7f7f7;
+}
+
+.tbb td {
+	padding: 5px;
+	font-size: 12px;
+	border: 1px solid #999;
+}
+
+.tbb th {
+	padding: 5px;
+	font-size: 13px;
+	background: #efefef;
+	border: 1px solid #999;
+}
+
+.input_text {
+	width: 95%;
+}
+</style>
+<script src="__PUBLIC__/js/initcity.js" type="text/javascript"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+	<?php if(ACTION_NAME == "userEdit") :?>
+	pc_init();
+	$("#id").attr("value",'<?=$rs['id']?>');
+	$("#name").attr("value",'<?=$rs['u_name']?>');
+	$("#name").attr("disabled",'disabled');
+	$("#company").attr("value",'<?=$rs['u_company']?>');
+	$("#shengfen").html('<?=$rs['u_province']?>');
+	$("#chengshi").html('<?=$rs['u_city']?>');
+	$("#tel").attr("value",'<?=$rs['u_tel']?>');
+	$("#manager").attr("value",'<?=$rs['u_manager']?>');
+	$("#phone").attr("value",'<?=$rs['u_phone']?>');
+	$("#addr").attr("value",'<?=$rs['u_address']?>');
+	$("#email").attr("value",'<?=$rs['u_email']?>');
+	$("#u_group").attr("value",'<?=$rs['u_group']?>');
+	$("#province").attr("disabled",true);
+	$("#city").attr("disabled",true);
+	$("#isedit").change(function() {
+		if($(this)[0].checked == true){
+			$("#province").attr("disabled",false);
+			$("#city").attr("disabled",false);
+		}else{
+			$("#province").attr("disabled",true);
+			$("#city").attr("disabled",true);
+		}
+	}); 
+	<?php endif;?>
+});
+function submitForm(w){
+	$.post(
+			"<?=U("Manager/userEdit")?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : "操作成功",
+						call : function(){
+							w.close();
+							freshIframe();
+						}	
+					});	
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+}
+</script>
+<body>
+	<div class="content">
+		<div class="bgloader"></div>
+		<form id="form" name="form">
+	<?php if(ACTION_NAME == "checkUserInfo"):?>
+			<table border="0" cellspacing="0" cellpadding="0"
+				style="width: 100%; margin: 10px auto;" class="tbb">
+				<tr>
+					<td class="gray" height="30" width="100" align="right">用户名：</td>
+					<td><?=$rs['u_name']?></td>
+					<td class="gray" height="30" width="100" align="right">所在地区：</td>
+					<td><?=$rs['u_province']?>&nbsp;/&nbsp;<?=$rs['u_city']?>
+				</td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司名称：</td>
+					<td colspan="3"><?=$rs['u_company']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">联系人：</td>
+					<td><?=$rs['u_manager']?></td>
+					<td class="gray" align="right">联系人电话：</td>
+					<td><?=$rs['u_phone']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司电话：</td>
+					<td><?=$rs['u_tel']?></td>
+					<td class="gray" align="right">常用邮箱：</td>
+					<td><?=$rs['u_email']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司地址：</td>
+					<td colspan="3"><?=$rs['u_address']?></td>
+				</tr>
+			</table>
+			<table border="0" cellspacing="0" cellpadding="0"
+				style="width: 100%; margin: 10px auto;" class="tbb">
+				<tr>
+					<td class="gray" height="30" width="100" align="right">所在用户组：</td>
+					<td><?=$rs['g_name']?></td>
+					<td class="gray" height="30" width="100" align="right">账户余额：</td>
+					<td width="120"><?=$rs['curr_maney']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">信用额度：</td>
+					<td><?=$rs['min_maney']?></td>
+					<td class="gray" align="right">可用额度：</td>
+					<td width="120"><?=$rs['avai_maney']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">定金比例：<br />优惠比例：</td>
+					<td><?=$rs['front_maney_percent']?>%<br /><?=$rs['tip_percent']?>%</td>
+					<td class="gray" align="right">报价次数：</td>
+					<td><?=$ofTotal['total']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="50" align="right">未完成订单数：<br />总金额：</td>
+					<td><?=$odTotalIng['total']?> <br /> <?=$odTotalIng['sumManey'] == "" ? 0 : $odTotalIng['sumManey']?></td>
+					<td class="gray" align="right">已完成订单数：<br />总金额：</td>
+					<td><?=$odTotalOver['total']?> <br /> <?=$odTotalOver['sumManey'] == "" ? 0 : $odTotalOver['sumManey']?></td>
+				</tr>
+			</table>
+			<table border="0" cellspacing="0" cellpadding="0"
+				style="width: 400px; margin: 20px auto; display: none;" class="tbb">
+				<tr>
+					<td class="gray" height="30" width="100" align="right">用户名：</td>
+					<td><?=$rs['u_name']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司名称：</td>
+					<td><?=$rs['u_company']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">所在地区：</td>
+					<td><?=$rs['u_province']?>&nbsp;/&nbsp;<?=$rs['u_city']?>
+				</td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司电话：</td>
+					<td><?=$rs['u_tel']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">联系人：</td>
+					<td><?=$rs['u_manager']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">联系人电话：</td>
+					<td><?=$rs['u_phone']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司地址：</td>
+					<td><?=$rs['u_address']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">常用邮箱：</td>
+					<td><?=$rs['u_email']?></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">所在用户组：</td>
+					<td><?=$rs['g_name']?></td>
+				</tr>
+			</table>
+	<?php else:?>
+		<input id="id" name="id" type="hidden" value="<?=$_GET['id']?>" />
+			<table border="0" cellspacing="0" cellpadding="0"
+				style="width: 400px; margin: 20px auto;" class="tbb">
+				<tr>
+					<td class="gray" height="30" align="right">用户名：</td>
+					<td><input id="name" name="name" type="text" class="input_text"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司名称：</td>
+					<td><input id="company" name="company" type="text"
+						class="input_text" style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">所在地区：</td>
+					<td>&nbsp;&nbsp;<label id="shengfen"></label><label id="chengshi"></label>&nbsp;&nbsp;&nbsp;
+						<label><input type="checkbox" id="isedit" name="isedit" />修改</label>
+						<select id="province" name="province"></select><select id="city"
+						name="city"></select>
+					</td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司电话：</td>
+					<td><input name="tel" type="text" class="input_text" id="tel"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">联系人：</td>
+					<td><input name="manager" type="text" class="input_text"
+						id="manager" style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">联系人电话：</td>
+					<td><input name="phone" type="text" class="input_text" id="phone"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">公司地址：</td>
+					<td><input name="addr" type="text" class="input_text" id="addr"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">常用邮箱：</td>
+					<td><input name="email" type="text" class="input_text" id="email"
+						style="width: 200px;" /></td>
+				</tr>
+				<tr>
+					<td class="gray" height="30" align="right">所在用户组：</td>
+					<td><select id="u_group" name="u_group">
+						<?php foreach($gArr as $row):?>
+							<option value="<?=$row['id']?>"><?=$row['g_name']?></option>
+						<?php endforeach;?>
+					</select></td>
+				</tr>
+			</table>
+	<?php endif;?>
+	</form>
+	</div>
+</body>
+</html>

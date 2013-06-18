@@ -1,0 +1,215 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	$('.bgloader').show(500);
+	$('#form').ajaxSubmit({
+		url:"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+		success:function(data){
+			if(data.status=="1"){
+				Maya.Msg({
+					type : "success",
+					msg : data.info,
+					call : function(){
+						//parent.location.reload();	
+						w.close();
+						//console.info("1111");
+						//freshShoppingAmount("<?=U(MODULE_NAME.'/freshCarAmount')?>");
+						$('.bgloader').fadeOut(500);
+					}	
+				});
+			}else{
+				Maya.Msg(data.info);	
+			}
+		},
+		error:function(){
+			Maya.Msg("操作失败！");	
+		}
+	});
+	return;
+}
+</script>
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.cont-attr {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+}
+
+.cont-attr li {
+	line-height: 30px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	
+}
+
+.cont-attr .attr p {
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .attr p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	font-weight: 800;
+	float: left;
+}
+
+.cont-attr .attr p .input {
+	font-size: 14px;
+	line-height: 30px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process {
+	width: 50%;
+	_width: 49%;
+	float: left;
+}
+
+.cont-attr .process p {
+	margin: 0 3px 3px 0;
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .process p .input {
+	font-size: 14px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	font-weight: 800;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+</style>
+</head>
+<body style="background: none;">
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+		<div
+			style="position: absolute; top: 10px; right: 20px; height: 60px; width: 300px; color: #ABABAB; text-align: right;">
+			<h3 style="font-size: 20px;"><?=C('MYCOMPANY')?></h3>
+			<span style="margin: 0 30px 0 0;">因为专业，所以放心</span>
+		</div>
+		<div
+			style="width: 300px; padding: 15px 0 5px 30px; color: #444; text-align: left;">
+			<h2 style="font-size: 15px;">
+				订单编号<span style="margin-left: 20px; font-size: 12px;"><?=$orderInfo['o_number']?></span>
+			</h2>
+			日期:&nbsp;&nbsp;<?=$row['o_date']?>
+		</div>
+		<div class="content" style="padding-top: 0;">
+			<div style="overflow: hidden;">
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<b
+								style="font-size: 18px; line-height: 35px; float: left; margin: 0 0 0 10px;"><?=$row['p_name']?></b>
+							<span style="line-height: 35px;">订单状态:&nbsp;&nbsp;<?=$orderInfo['statusInfo']?></span>
+						</p>
+					</li>
+				</ul>
+				<ul class="cont-attr">
+					<li class="process">
+						<p>
+							<span class="label">数量</span> <span class="input"><?=$row['o_amount']?></span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">尺寸</span> <span class="input"><?=$row['o_size']?></span>
+						</p>
+					</li>
+				</ul>
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<span class="label">基础信息</span> <span class="input"><?=$row['attrInfo']?></span>
+						</p>
+					</li>
+					<li class="attr">
+						<p>
+							<span class="label">后加工工序</span> <span class="input"><?=$row['processInfo']?></span>
+						</p>
+					</li>
+				</ul>
+			</div>
+			<div class="cleaner_h10"></div>
+			<div style="overflow: hidden;">
+				<ul class="cont-attr">
+					<li class="process">
+						<p>
+							<span class="label">附件</span> <span class="input"
+								style="color: #ff0000; font-size: 12px;">
+								<?php if(empty($row['o_filePath'])): ?>还未上传<?php else:?>
+								<a href="__ROOT__/<?=$row['o_filePath']?>"
+								class="easyui-tooltip" title="点击下载 "><?=$row['o_fileName']?></a>
+								<?php endif;?>
+							</span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">附件上传：</span> <span class="input"
+								style="color: #ff0000; font-size: 12px;"> <input type="file"
+								id="file" style="width: 110px;"
+								name="file" class="input_text easyui-tooltip"
+								title="注：上传仅限于 *.rar,*.zip 格式，大小10M以内。" />
+							</span>
+						</p>
+					</li>
+				</ul>
+				<ul class="cont-attr">
+					<li class="attr">
+						<p style="border: 0;">
+							<span class="label">订单补充：</span>
+							<span class="input">
+							<textarea id="o_desc" name="o_desc" rows=""
+							cols="" class="input_text" style="height: 50px; width: 500px;"><?=$orderInfo['o_desc']?></textarea>
+							</span>
+						</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="page-contain" style="border: 0;">
+			<table width="100%">
+				<tr>
+					<td align="right">订单金额（不含税、不含运费）：<b
+						style="color: #ff0000; font-size: 20px;">￥<?=$row['o_price']?></b></td>
+					<td width="40">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

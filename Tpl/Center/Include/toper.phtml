@@ -1,0 +1,183 @@
+<script type="text/javascript">
+		$(document).ready(function(){
+			$("#logo").css("height","61px");
+			$('#myManey').tooltip({
+				content: $('<div></div>'),
+				onShow: function(){
+					$(this).tooltip('arrow').css('left', 20);  
+               		$(this).tooltip('tip').css('left', $(this).offset().left);  
+		        },  
+		        onUpdate: function(cc){  
+		            cc.panel({  
+		                width: 150,  
+		                height: 'auto',  
+		                border: false,  
+		                href: '<?=U('Center/Index/getMyManeyInfo') ?>'  
+		            });  
+		        } 
+			});
+        });
+		<?php if(isset($_SESSION ['cmp'])){?>
+		function myOrder(){
+			new Maya.Box({
+				text : "我的进行中订单",
+				url : "<?=U(MODULE_NAME.'/getMyOrder')?>",
+				overlayAlpha : .6,
+				width : '98%',
+				height : 600,
+				btns : [{
+						text : "  确定  ",
+						isCancel : true
+					}]
+			});
+		}
+        function upFile(id){
+        	new Maya.Box({
+        		text : "上传文件",
+        		url : "<?=U('QuotedPrice/upFile')?>/id/"+id,
+        		win : parent,
+        		width : 750,
+        		height : 220,
+        		btns : [
+            		{
+        				text : "    提交    ",
+        				onClick : function(w){
+        					w.getIframe().submitForm(w);
+        					// _self.close();
+        				}	
+        			},
+        			{
+        				text : "    暂不上传    ",
+        				onClick : function(w){
+        					w.close();
+        					top._offerResult.close();
+        				}
+        			}
+        		]
+        	});
+        }
+        function editPwd(){
+        	new Maya.Box({
+        		text : "修改密码",
+        		url : "<?=U ( "Manager/editPwd" )?>",
+        		width : 330,
+        		height : 220,
+        		btns : [
+            		{
+	    				text : "    确定    ",
+	    				onClick : function(w){
+	    					w.getIframe().submitForm(w);
+	    					// _self.close();
+	    				}	
+	    			},
+        			{
+	    				text : "    取消    "	,
+        				isCancel : true	
+        			}
+        		]
+        	});	
+        }
+        function logoutClick(){
+        	new Maya.Box({
+        		text : "退出登录",
+        		chtml : "确定要退出登录吗？",
+        		isAlert : true,
+        		iframeAuto : false,
+        		overlayAlpha : .5,
+        		iframeScroll : "auto",
+        		inlineAuto : false,
+        		type : "inline",
+        		btns : [
+        			{
+        				text : "退出"	,
+        				onClick : function(){
+        					$.get(
+                                    "<?=U ( "Login/loginOut" )?>",
+                                    function(data){
+                                            if(data.data=="success"){
+                                            	Maya.Msg({
+                    	        	                type : "success",
+                    	        	                msg : data.info,
+                    	        	                sec : 1.5,
+                    	        	                call : function(){
+                    	        	                        window.location="<?=U ( "7788ysw/Index/index" )?>";
+                    	        	                }
+                    	        	       		 });
+                                            }else{
+                                                    
+                                            }
+                                    },
+                                    "json"        
+                            )
+        				}
+        			},
+        			{
+        				text : "取消"	,
+        				isCancel : true
+        			}
+        		]
+        	});	
+        }
+        function chongzhi(){
+        	new Maya.Box({
+        		text : "充值预付款",
+        		url : "<?=U ( "MyUser/charge" )?>",
+        		width : 500,
+        		height : 220,
+        		btns : [
+            		{
+            			text : "    提交    ",
+        				onClick : function(w){
+        					w.getIframe().submitForm(w);
+        					// _self.close();
+        				}
+        			},{
+        				text     : "    取消    ",
+        				isCancel : true	
+        			}
+        		]
+        	});
+        }
+        <?php }?>
+    </script>
+<body class="easyui-layout">
+	<noscript>
+		<div
+			style="position: absolute; z-index: 100000; height: 2046px; top: 0px; left: 0px; width: 100%; background: white; text-align: center;">
+			<img src="__PUBLIC__/images/noscript.gif" alt='抱歉，请开启脚本支持！' />
+		</div>
+	</noscript>
+	<!-- top -->
+	<div data-options="region:'north'" title="" border="false"
+		style="height: 90px; overflow: hidden;">
+		<div id="top">
+			<div id="menu">
+				<table style="width: 100%;" border="0" cellpadding="0"
+					cellspacing="0">
+					<tr>
+						<td width="50"></td>
+						<td align="left">
+						<?php if(isset($_SESSION ['cmp'])){?>
+							你好，<?=$_SESSION ['cmp'] ['u_manager']?>
+							[<a href="#" onclick="logoutClick()">退出</a>] <span class="hr">|</span>
+							<a href="<?php echo U("7788ysw/Index/index");?>">返回首页</a>
+						<?php }else{?>
+						<a href="#" onclick="login()">登录</a> <span class="hr">|</span> <a
+							href="#" onclick="regist()">注册</a>
+						<?php }?></td>
+						<td width="50"></td>
+						<td align="right">
+					<?php if(isset($_SESSION ['cmp'])){?>
+						<a href="#" id="myManey" class="easyui-tooltip">账户余额&nbsp;[<span id="account"><?=round ($lastManey,2)?></span>]</a>
+						[<a href="#" onclick="chongzhi()">充值</a>] <span class="hr">|</span>
+							<a href="#" onclick="myOrder()">订单提醒&nbsp;[<span
+								id="shopping-amount"><?=$myOrder?></span>]
+						</a> <span class="hr">|</span> <a href="#" onclick="editPwd()">修改密码</a>
+					<?php }?></td>
+						<td width="30"></td>
+					</tr>
+				</table>
+			</div>
+			<div id="logo"></div>
+		</div>
+	</div>

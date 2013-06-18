@@ -1,0 +1,76 @@
+<include file="Include:header" />
+<style>
+html {
+	background: none;
+}
+
+.tbb {
+	border-collapse: collapse;
+}
+.gray{
+	background: #f7f7f7;
+}
+.tbb td {
+	padding: 5px;
+	font-size: 12px;
+	border: 1px solid #999;
+}
+
+.tbb th {
+	padding: 5px;
+	font-size: 13px;
+	background: #efefef;
+	border: 1px solid #999;
+}
+
+.input_text {
+	width: 95%;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	$.post(
+			"<?=U("Manager/checkGroup")?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : "操作成功",
+						call : function(){
+							w.close();
+							setTimeout("freshIframe()",600);
+						}	
+					});	
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+}
+</script>
+<body>
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input id="id" name="id" type="hidden" value="<?=$_GET['id']?>"/>
+		<input id="type" name="type" type="hidden" value="<?=$_GET['type']?>"/>
+		<table border="0" cellspacing="0" cellpadding="0" style="width:400px;margin:20px auto;" class="tbb">
+			<tr>
+				<td class="gray" height="30" align="right">用户名：</td>
+				<td><input id="g_name" name="g_name" type="text" class="input_text"
+					style="width: 200px;" value="<?=$rs['g_name']?>" /></td>
+			</tr>
+			<tr>
+				<td class="gray" height="30" align="right">公司名称：</td>
+				<td>
+					<textarea rows="" cols="" id="g_desc"  class="input_text" style="height:50px;width:200px;" name="g_desc" ><?=$rs['g_desc']?></textarea>	
+				</td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

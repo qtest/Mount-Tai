@@ -1,0 +1,138 @@
+<include file="Include:header" />
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.input_text {
+	width: 80px;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.price').numberbox({min:0,precision:2});
+	$('.numbe').numberbox({min:0,precision:0});
+	<?php if(isset($rs)):?>
+		editStatus();
+	<?php endif;?>
+	$('#m_minWork').blur(function(){
+	  	var n = parseInt($(this).val());
+	  	$('#showBig').html(n+1);
+	});
+});
+function editStatus(){
+	$("#m_type").attr("value","<?=$rs['m_type']?>");
+	$("input[name='m_status'][value=<?=$rs['m_status']?>]").attr("checked",true); 
+	$("input[name='m_color'][value=<?=$rs['m_color']?>]").attr("checked",true); 
+}
+
+function submitForm(w){
+	if($("#m_name").val()==""){
+		Maya.Msg("<strong>纸名称</strong> 不能为空");
+		return false;
+	}
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+								
+							w.close();
+							freshIframe();
+							//console.info("1111");
+							//top.frames['centerIframe'].location.reload();
+							//parent.$('#centerIframe').location.reload();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+</script>
+</head>
+<body>
+	<div id="form_add_point" class="content">
+		<form id="form" name="form">
+			<input type="hidden" name="type" id="type" value="<?=$_GET['type']?>" />
+			<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+			<table class="tb" style="text-align: center;">
+				<thead>
+					<tr>
+						<th>状态</th>
+						<th>机器名</th>
+						<th>类型</th>
+						<th>颜色</th>
+					</tr>
+				</thead>
+				<tr>
+					<td><label style="color: #438787;"><input name="m_status" id="zb" type="radio" value="1" checked="checked" /> 启用</label>
+					<label style="color: #ff0000;"><input name="m_status" id="bz" type="radio" value="0" /> 停用</label></td>
+					<td><input type="text" name="m_name" id="m_name" class="input_text" value="<?=$rs['m_name']?>" /></td>
+					<td><select id="m_type" name="m_type">
+							<option value="对开机">对开机</option>
+							<option value="四开机">四开机</option>
+							<option value="六开机">六开机</option>
+							<option value="八开机">八开机</option>
+					</select></td>
+					<td>
+					<label><input name="m_color" id="ds" type="radio" value="单色" checked="checked" /> 单色</label>
+					<label style="color: #ff0000;"><input name="m_color" id="cs" type="radio" value="彩色" /> 彩色</label></td>
+				</tr>
+			</table>
+			<div class="cleaner_h10"></div>
+			<table class="tb" style="text-align: center;">
+				<thead>
+					<tr>
+						<th height="30" colspan="2">最大印刷尺寸(mm)</th>
+						<th colspan="2">印刷厚度范围(克)</th>
+					</tr>
+				</thead>
+				<tr>
+					<td height="30">最大宽</td>
+					<td>最大高</td>
+					<td>最小厚度</td>
+					<td>最大厚度</td>
+				</tr>
+				<tr>
+					<td height="30"><input type="text" name="m_maxLength" id="m_maxLength" class="input_text numbe" value="<?=$rs['m_maxLength']?>" /></td>
+					<td><input type="text" name="m_maxWidth" id="m_maxWidth" class="input_text numbe" value="<?=$rs['m_maxWidth']?>" /></td>
+					<td><input type="text" name="m_minThick" id="m_minThick" class="input_text numbe" value="<?=$rs['m_minThick']?>"/></td>
+					<td><input type="text" name="m_maxThick" id="m_maxThick" class="input_text numbe" value="<?=$rs['m_maxThick']?>"/></td>
+				</tr>
+			</table>
+			<div class="cleaner_h10"></div>
+			<table class="tb" style="text-align: center;">
+				<thead>
+					<tr>
+						<th height="30"></th>
+						<th height="30"></th>
+						<th colspan="2">印工费</th>
+					</tr>
+				</thead>
+				<tr>
+					<td height="30">起印费</td>
+					<td>版费</td>
+					<td><input type="text" name="m_minWork" id="m_minWork" class="numbe" style="width: 40px;" value="<?=$rs['m_minWork'] == "" ? 10000 : $rs['m_minWork']?>" />次以下</td>
+					<td><label id="showBig">10001</label> 次以上</td>
+				</tr>
+				<tr>
+					<td height="30"><input type="text" name="m_price" id="m_price" class="input_text price" value="<?=$rs['m_price']?>" /></td>
+					<td><input type="text" name="m_versionCost" id="m_versionCost" class="input_text numbe" value="<?=$rs['m_versionCost']?>" /></td>
+					<td><input type="text" name="m_minWorkPrice" id="m_minWorkPrice" class="input_text price"
+						value="<?=$rs['m_minWorkPrice']?>" /> 元/千次</td>
+					<td><input type="text" name="m_overWorkPrice" id="m_overWorkPrice" class="input_text price"
+						value="<?=$rs['m_overWorkPrice']?>" /> 元/千次</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<include file="Include:Header" />
+<script language="javascript">
+function submitForm(w){
+	if($.trim($("#oldpass").val())==""){
+		Maya.Msg("请填写 <strong>原密码</strong>");
+		return false;	
+	}
+	if($.trim($("#newpass").val())==""){
+		Maya.Msg("请填写 <strong>新密码</strong>");
+		return false;	
+	}
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.data=="success"){
+					Maya.Msg({
+                        type : "success",
+                        msg : data.info,
+                        sec : 1.5,
+                        call : function(){
+                        	w.close();
+                        }
+               		 });
+				}else{
+					Maya.Msg({
+                        type : "fail",
+                        msg : data.info
+                });	
+				}
+			},
+			"json"
+		);
+	return false;
+}
+</script>
+<div class="content">
+<form id="form" name="form" >
+    <div class="form_pad_10">
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="75" height="30" align="right">原密码：</td>
+            <td><input type="password" class="input_text" name="oldpass" id="oldpass" style="width:180px;" /></td>
+            </tr>
+        <tr>
+            <td height="30" align="right">新密码：</td>
+            <td><input  type="password" class="input_text" name="newpass" id="newpass" style="width:180px;" /></td>
+        </tr>
+        <tr>
+            <td height="30" align="right">重复新密码：</td>
+            <td><input  type="password" class="input_text" name="newpass2" id="newpass2" style="width:180px;" /></td>
+        </tr>
+    </table>
+    </div>
+</form>
+</div>

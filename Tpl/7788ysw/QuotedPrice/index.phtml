@@ -1,0 +1,262 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	//$('.bgloader').fadeOut(500);
+});
+function submitForm(){
+	<?php if($_SESSION['cmp']): ?>
+	//console.info($("#form").formSerialize());
+	$.post(
+			"<?=U('Center/QuotedPrice/stickerPrice')?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							showResult(data.data);
+						}
+					});
+				}else{
+					Maya.Msg({
+						msg : data.info,
+						call : function(){
+						}	
+					});	
+					
+				}
+			},
+			"json"
+		);
+	return true;
+	<?php else:?>
+	loginBtn('<?=U ( "Login/panel" )?>');
+	return false;
+	<?php endif;?>
+}
+
+function showResult(id){
+	top._offerResult = new Maya.Box({
+		text : "报价结果详细信息",
+		url : "<?=U('Center/QuotedPrice/result')?>/id/"+id,
+		win : top,
+		width : 750,
+		height : 220,
+		btns : [
+			<?php if($_SESSION ['cmp'] ['g_manager'] == 1):?>
+			{
+				text : ' 详细信息(内部)',
+				onClick : function(w){
+					w.getIframe().showAll(w);
+					// _self.close();
+				}	
+			},
+			<?php endif;?>
+    		{
+				text : "    生成订单    ",
+				onClick : function(w){
+					w.getIframe().submitShopping(w,top);
+					// _self.close();
+				}	
+			},
+			{
+				text : "    取消    ",
+				isCancel:true
+			}
+		]
+	});
+}
+
+function upFile(id){
+	new Maya.Box({
+		text : "上传文件",
+		url : "<?=U('QuotedPrice/upFile')?>/id/"+id,
+		win : parent,
+		width : 750,
+		height : 220,
+		btns : [
+    		{
+				text : "    提交    ",
+				onClick : function(w){
+					w.getIframe().submitForm(w);
+					// _self.close();
+				}	
+			},
+			{
+				text : "    暂不上传    ",
+				onClick : function(w){
+					w.close();
+					top._offerResult.close();
+				}
+			}
+		]
+	});
+}
+function change(node){
+	//console.info(node);return;
+	$.get(
+			"<?=U('Center/QuotedPrice/getKeZhong')?>",
+			{id:node.id,proId:'<?=$_GET['id']?>'},
+			function(data){
+				//console.info(data);loadData
+				$('.kezhong').combobox('loadData',data);
+			},
+			"json"
+		);
+}
+
+function checkMust(e){
+	$(e).attr('checked',true);
+}
+
+function showCheck(the,str,com,nm){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('enable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('enable');
+		}
+	}else{
+		$("#"+str).css("display","none");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('disable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('disable');
+		}
+	}
+}
+function showCheckAttr(the,str,id){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+		if(id != undefined && id != ''){
+			$('#'+id).combobox('clear');
+			$('#'+id).combobox('disable');
+		}
+	}else{
+		$("#"+str).css("display","none");
+		if(id != undefined && id != ''){
+			$('#'+id).combobox('enable');
+		}
+	}
+}
+</script>
+<style type="text/css">
+body{font-size:12px;}
+.cont-attr {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+}
+
+.cont-attr li {
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	border-bottom: 1px solid #999;
+	/*line-height: 25px;	*/
+	height: 55px;
+	width: 290px;
+	float: left;
+}
+
+.cont-attr .attr p {
+	overflow: hidden;
+}
+
+.cont-attr .attr .label { /*padding: 0 15px 0 0;
+	line-height: 55px;
+	background-color: transparent;
+	margin: 0 0 0 5px;
+	width: 60px;
+	text-align: left;
+	float: left;*/
+	width: 60px;
+	text-align: left;
+}
+
+.cont-attr .attr .input {
+	line-height: 55px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	width: 220px;
+	height: 55px;
+}
+
+.cont-attr .attr .inputs {
+	width: 60px;
+}
+
+.cont-attr .attr .attrDiy {
+	line-height: 30px;
+	margin-left: -30px;
+}
+
+.cont-attr .process {
+	border-bottom: 1px solid #999;
+	line-height: 40px;
+	padding: 5px 10px;
+	float: left;
+}
+
+.cont-attr .process p {
+	overflow: hidden;
+}
+
+.cont-attr .process p .input {
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+</style>
+<include file="Include:toper" />
+<div style="width:90%;margin:0 auto;padding-top: 20px;*zoom: 1; position: relative;">
+	<div class="main_panel" style="width:220px; position: absolute; left: 0; top: 20px;clear:both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<ul>
+					<li class="header">
+						<span>请选择报价项目</span>
+					</li>
+					<?php foreach($productArr as $row):?>
+						<li <?=$_GET['id'] == $row['id'] ? 'class="active"' : ''?>>
+							<div>
+								<a href="<?=U('QuotedPrice/index').'/type/'.$row['p_type'].'/id/'.$row['id']?>"><span
+									class="icon"></span><?=$row['p_name']?>自助报价</a>
+							</div>
+						</li>
+					<?php endforeach;?>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="main_panel" style="margin-left:240px;clear:both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<form id="form" name="form">
+					<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+					<?php if(empty($_GET['id'])):?>
+						<div style="height:400px;font-size:25px;"><br />
+							<span id="span_zs" style="line-height:60px;">可自定义尺寸、数量、后加工，报价经专业运算而成</span>
+							<img src="__PUBLIC__/Plugin/slider/images/slide_1.jpg" alt="" />
+						</div>
+					<?php else:?>
+					<include file="viewPage" />
+					<?php endif;?>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="clear"></div>
+<include file="Include:footer" />
+</body>
+</html>

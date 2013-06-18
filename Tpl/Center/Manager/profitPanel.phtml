@@ -1,0 +1,89 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.price').numberbox({min:0,precision:2});
+	$('.percent').numberbox({min:-100,max:100,precision:2});
+	$('.valu').numberbox({precision:0});
+	$(".price").change(function(){
+		var id = $(this)[0].id;
+		var nid = parseInt(id.split("_")[1]) + 1;
+		var nval = parseFloat($(this).val(),10) + 1;
+		if(nval < $("#min_"+(nid-1)).val() ){
+			nval = parseFloat($("#min_"+(nid-1)).val(),10) + 1;
+			$(this).val(nval-1);
+		}
+		$("#min_"+nid).val(nval);
+	})
+});
+function submitForm(w){
+	$.post(
+			"<?=U(MODULE_NAME.'/profit')?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							w.close();
+                        	freshIframe();
+						}	
+					});
+					
+				}else{
+					Maya.Msg(data.info);
+				}
+			},
+			"json"
+		);
+	return true;
+}
+</script>
+</head>
+<body>
+	<div id="home" style="overflow: hidden;">
+		<form id="form" name="form">
+			<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+			<div id="form_add_point" class="content">
+				<div class="easyui-panel" fit="true" title=""
+					style="padding: 10px; height: auto; background: #F9F9F9;">
+					<table class="tb" style="text-align: center; width: 600px">
+						<thead>
+							<tr>
+								<th width="120">&nbsp;</th>
+								<th colspan="2" align="center" width="180">金额范围</th>
+								<th colspan="2" align="center">利润设置</th>
+							</tr>
+						</thead>
+						<tr>
+							<td>&nbsp;</td>
+							<td align="center">最小值</td>
+							<td align="center">最大值</td>
+							<td align="center">百分比</td>
+							<td align="center">固定值</td>
+						</tr>
+						<?php
+						$title = array('一','二','三','四','五');
+						for($i = 0; $i < 5; $i ++) :
+						?>
+						<tr>
+							<td>第<?=$title[$i]?>阶段</td>
+							<td colspan="2">
+								<input type="text" id="min_<?=$i?>" name="min_<?=$i?>" readonly class="input_text" style="width: 80px" value="<?=$i==0?0:$profitArr[$i]['fi_min']?>" />~ 
+								<input type="text" id="max_<?=$i?>" name="max_<?=$i?>" style="width: 80px" <?=$i==4 ? 'readonly class="input_text" value="无穷大"':'class="input_text price" value="'.$profitArr[$i]['fi_max'].'"'?> />
+							</td>
+							<td><input type="text" id="pes_<?=$i?>" name="pes_<?=$i?>" class="input_text percent" style="width: 60px" value="<?=$profitArr[$i]['fi_percent']?>" />%</td>
+							<td><input type="text" id="val_<?=$i?>" name="val_<?=$i?>" class="input_text valu" style="width: 80px" value="<?=$profitArr[$i]['fi_value']?>" /></td>
+						</tr>
+						<?php endfor;?>
+						<tr>
+							<td style="height:40px;">说明：</td>
+							<td colspan="4" align="left">系统会根据项目报价的金额范围选择对应的利润率，先算百分比再算固定值。<br />可以设置负数。</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

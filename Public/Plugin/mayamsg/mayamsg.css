@@ -1,0 +1,9 @@
+@charset "utf-8";
+.MayaMessage_Bg{background-image:url(images/tip_layer.png);height:54px;line-height:52px;}
+#MayaMessage_Panel{position:absolute;
+z-index:100020;background-position: 0 -161px;background-repeat:repeat-x;padding: 0 18px 0 9px;font-size:14px;}
+.MayaMessage_success{background-position:-6px 0;left:-45px;position:absolute;top:0;width:45px;}
+.MayaMessage_fail{background-position:-6px -108px;left:-45px;position:absolute;top:0;width: 45px;}
+.MayaMessage_hits{background-position:-6px -54px;left:-45px;position:absolute;top: 0;width: 45px;}
+.MayaMessage_End{background-position:0 0;position:absolute;right:-6px;top:0;width: 6px;}
+.MayaMessage_Font{font-size:12px;color:#333;font-family:微软雅黑,arial;}

@@ -1,0 +1,178 @@
+<include file="Include:header" />
+<style>
+body {
+	font-size: 16px;
+}
+
+.tbb {
+	border-collapse: collapse;
+}
+
+.tbb td {
+	padding:5px;
+	font-size: 16px;
+	border: 2px solid #999;
+}
+
+.text {
+	border: 0px none;
+	background-color: transparent;
+	font-size: 16px;
+}
+.input_text{width:95%;}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	if($("#print").val() == "1"){
+		print();
+		return false;
+	}
+	//var res = true;
+	new Maya.Box({
+		text : "订单状态修改",
+		chtml : "<b>打印加工单后，订单将进入生产中状态。<br />确定要打印？</b>",
+		width:400,
+		isAlert : true,
+		iframeAuto : false,
+		iframeScroll : "auto",
+		inlineAuto : false,
+		type : "inline",
+		btns : [
+			{
+				text : "  确定  ",
+				onClick : function(s){
+					$.post(
+							"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+							{id:$('#id').val(),oid:$('#order_id').val()},
+							function(data){
+								if(data.status=="1"){
+									Maya.Msg({
+										type : "success",
+										msg : data.info,
+										call : function(){
+											//res = true;
+											s.close();
+											w.getIframe().print();
+											w.close();
+											//setTimeout(function(){},600);
+										}
+									});	
+								}else{
+									Maya.Msg(data.info);
+								}
+							},
+							"json"
+						);
+  	       		 }
+			},
+			{
+				text : "  取消  "	,
+				isCancel : true
+			}
+		],
+		onClose:function(){
+			freshIframe();
+		}
+	});
+}
+</script>
+<body>
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" style="display: none" id="id" name="id" value="<?=$row['id']?>">
+		<input type="hidden" style="display: none" id="order_id" name="order_id" value="<?=$row['order_id']?>">
+		<input type="hidden" style="display: none" id="print" name="print" value="<?=$row['is_print']?>">
+		<div
+			style="position: absolute; top: 10px; left: 20px; height: 60px; width: 300px; color: #ABABAB; text-align: left;">
+			<h3 style="font-size: 16px;">
+      			<?=C('MYCOMPANY')?>
+    		</h3>
+			<span style="margin: 0 0 0 30px;font-size: 12px;">因为专业，所以放心</span>
+		</div>
+		<div
+			style="padding: 25px 30px 5px 30px; color: #444; text-align: right; font-size: 13px;">
+			<h2 style="font-size: 20px; Letter-spacing: 20px;text-align: center;">加工单</h2>
+			<span style="margin: 0 0 0 30px;">&nbsp;&nbsp;<?=date("Y 年 m 月 d 日")?></span>
+		</div>
+		<div class="content" style="padding-top: 0;">
+			<table width="100%" border="2" cellpadding="0" cellspacing="0" class="tbb" bordercolor="#666666">
+				<tr>
+					<td width="80" height="35" align="center" valign="middle"><strong>客户名称</strong></td>
+					<td valign="middle" colspan="3">
+						<?=$row['customer']?>
+					</td>
+					<td width="80" align="center" valign="middle"><strong>交货日期</strong></td>
+					<td width="150" valign="middle">
+						<?=date ( "Y年 m月 d日", strtotime ( $row['expire_date'] ) )?>
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>文件名称</strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<?=$row['label_name']?>
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>纸张要求</strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<?=$row['paper_attr']?>
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>成品尺寸</strong></td>
+					<td valign="middle">
+						<?=$row['cus_size']?>
+					</td>
+					<td width="60" align="center" valign="middle"><strong>单位</strong></td>
+					<td width="70" valign="middle" align="center">
+						<?=$row['finel_unit']?>
+					</td>
+					<td width="80" align="center" valign="middle" align="center"><strong>印刷数量</strong></td>
+					<td width="80" valign="middle" align="center">
+						<?=$row['number']?>
+					</td>
+				</tr>
+
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>开料尺寸</strong></td>
+					<td valign="middle">
+					<?=$row['true_size']?>
+					</td>
+					<td align="center" valign="middle"><strong>单位</strong></td>
+					<td  valign="middle" align="center">
+						<?=$row['paper_unit']?>
+					</td>
+					<td align="center" valign="middle"><strong>纸张数量</strong></td>
+					<td valign="middle" align="center">
+						<?=$row['paper_amount']?>
+					</td>
+				</tr>
+				<tr>
+					<td height="35" valign="middle" align="center"><strong>后加工： </strong>
+					</td>
+					<td valign="middle" colspan="5">
+						<?=$row['process']?>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" colspan="6" height="200">
+						<table style="width: 100%;border:0;">
+							<tr>
+								<td valign="top" width="80"  style="border:0;"><strong>其它要求：</strong></td>
+								<td align="left" style="border:0;">
+									<?=$row['comment']?>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

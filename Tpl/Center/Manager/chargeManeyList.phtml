@@ -1,0 +1,148 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	//$(".chosen").chosen();
+	//$("#stat").val('<?=$_GET['stat']?>');
+	//$("#stat").trigger("liszt:updated");
+});
+function show(id,sta){
+	var btns = [{text     : "    确定   ",isCancel : true}];
+	if(sta == 0){
+		btns = [{text : " 审核通过 ",onClick : function(w){w.getIframe().submitForm(w,'yes');}
+				},{text : " 不通过 ",onClick : function(w){w.getIframe().submitForm(w,'no');}
+				},{text     : "    取消    ",isCancel : true}];
+	}
+	new Maya.Box({
+		text : "查看详细信息",
+		url : "<?=U ( "Manager/showCharge" )?>/id/"+id,
+		win : parent,
+		width : 700,
+		height : 220,
+		btns : btns,
+		onClose:function(){freshIframe();}
+	});
+}
+function chongzhi(){
+	new Maya.Box({
+		text : "充值预付款",
+		url : "<?=U ( "Manager/charge" )?>",
+		win : parent,
+		width : 500,
+		height : 220,
+		btns : [
+    		{
+    			text : "    提交    ",
+				onClick : function(w){
+					w.getIframe().submitForm(w);
+					// _self.close();
+				}
+			},{
+				text     : "    取消    ",
+				isCancel : true	
+			}
+		],
+		onClose:function(){freshIframe();}
+	});
+}
+
+</script>
+
+<div class="content">
+	<div class="tag">筛选</div>
+	<div class="tagc">
+		<form id="form" method="get">
+			<input type="hidden" name="s" id="s"
+				value="Center/<?=MODULE_NAME?>/<?=ACTION_NAME?>/" />
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100" height="30" align="right"><strong>状态：</strong></td>
+					<td width="160"><select class="input_text chosen" id="stat" name="stat" style="width:150px;" >
+							<option value="">不限</option>
+							<option value="1">成功</option>
+							<option value="0">审核中</option>
+							<option value="2">失败</option>
+						</select>
+					</td>
+					<td width="100" height="30" align="right"><strong>日期范围：</strong></td>
+					<td><input id="dstart" type="text" class="input_text easyui-datebox"
+							name="dstart" value="<?=$_GET['dstart'] == "" ? date ( "Y-m-d", strtotime ( "-30 day" ) ) : $_GET['dstart']?>" /> — <input id="dend"
+							class="input_text easyui-datebox" type="text" name="dend"
+							value="<?=$_GET['dend'] == "" ? date ( "Y-m-d") : $_GET['dend']?>" />&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton"
+						onclick="javascript:$('#form').submit();" iconCls="icon-search">搜索</a>
+						<a href="#" class="easyui-linkbutton"
+						onclick="chongzhi();" iconCls="icon-search">充值</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div class="tag">充值记录</div>
+	<div class="tagc" style="margin-bottom: 0; padding: 1px;">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"
+			class="tb tblGrid">
+			<thead>
+				<tr bgcolor="#CCCCCC">
+					<!-- 会员号 用户名 所在组 公司名称 地区 联系人 QQ 登录/报价  -->
+					<th width="30" align="center"></th>
+					<th align="left" width="80"><strong>会员号</strong></th>
+					<th align="left" width="140"><strong>账户</strong></th>
+					<th align="left" width="140"><strong>目标账户</strong></th>
+					<th align="center" width="100"><strong>汇款日期</strong></th>
+					<th align="left" width="80"><strong>充值金额</strong></th>
+					<th align="left" width="80"><strong>余额</strong></th>
+					<th align="left" width="60"><strong>状态</strong></th>
+					<th align="left" width="50"><strong>审核</strong></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			$i = 0;
+			foreach ( $recordArr as $row ) :
+				$i ++;
+				$bg = $i % 2 == 0 ? 'bgcolor="#FAFAFA"' : "";
+				?>
+				<tr>
+					<td align="center"><?=$i?></td>
+					<td align="left"><?= $row['u_name'] ?></td>
+					<td align="left"><?= $row['re_bankInfo'] ?></td>
+					<td align="left"><?= $row['re_myBank'] ?></td>
+					<td align="center"><?= $row['re_date'] ?></td>
+					<td align="left"><?= $row['re_money'] ?></td>
+					<td align="left"><?= $row['re_overage'] ?></td>
+					<td align="center">
+						<?php 
+							if($row['re_status'] == 0){
+								echo "<span style='color:#E4C600;'>审核中</span>";
+							}else if($row['re_status'] == 1){
+								echo "<span style='color:blue;'>成功</span>";
+							}else{
+								echo "<span style='color:red;'>失败</span>";
+							}
+						?>
+					</td>
+					<td align="center">
+						<a href="#" onclick="show(<?=$row['id']?>,<?=$row['re_status']?>)" title="查看或修改状态"
+						class="easyui-linkbutton" plain="true" iconCls="icon-search"></a>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+        </tbody>
+		</table>
+		<!-- 分页文字 -->
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="center" width="200">
+						<!-- <input type="submit"
+						class="maya_btn export_btn" value="导出Excel" /> <input
+						type="submit" class="maya_btn import_btn" value="导入Excel" /> -->
+					</td>
+					<td align="right"><?=$page->printCount();$page->pageNormal();$page->printDropMenu();?></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

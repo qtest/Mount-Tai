@@ -1,0 +1,189 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	$('#form').ajaxSubmit({
+		url:"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+		type: "post",  
+        dataType: "json",
+		success:function(data){
+			if(data.status=="1"){
+				Maya.Msg({
+					type : "success",
+					msg : data.info,
+					call : function(){
+						w.close();
+						top._offerResult.close();
+					}	
+				});
+			}else{
+				Maya.Msg(data.info);	
+			}
+		},
+		error:function(){
+			Maya.Msg("操作失败！");	
+		}
+	});
+	return;
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			{id:$('#id').val()},
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							w.close();
+							top._offerResult.close();
+							//freshShoppingAmount("<?=U('Index/freshCarAmount')?>");
+							//freshShoppingAmount(data.data);
+							//freshIframe();
+						}
+					});
+				}else{
+					Maya.Msg(data.info);
+				}
+			},
+			"json"
+		);
+}
+</script>
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.cont-attr {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+}
+
+.cont-attr li {
+	line-height: 30px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	
+}
+
+.cont-attr .attr p {
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .attr p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .attr p .input {
+	font-weight: 800;
+	font-size: 14px;
+	line-height: 30px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process {
+	width: 48%;
+	float: left;
+}
+
+.cont-attr .process p {
+	margin: 0 3px 3px 0;
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .process p .input {
+	font-size: 14px;
+	font-weight: 700;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+</style>
+</head>
+<body style="background: none;">
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+		<div
+			style="height: 60px; text-align: center; padding-top: 10px; line-height: 30px;">
+			<h3 style="font-size: 25px; text-align: center"><?=C('MYCOMPANY')?></h3>
+			<b>日期：</b><span><?=date('Y 年 m 月 d 日')?></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>编号：</b><span><?=$rs['o_number']?></span>
+		</div>
+		<div id="form_add_point" class="content">
+			<div class="easyui-panel" title=""
+				style="padding: 10px; overflow: hidden;">
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<b
+								style="font-size: 18px; line-height: 35px; float: left; margin: 0 0 0 10px;"><?=$rs['p_name']?></b>
+							<span>报价时间:&nbsp;&nbsp;<?=$rs['o_date']?></span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">数量</span> <span class="input"><?=$rs['o_amount']?></span>
+						</p>
+					</li>
+					<li class="process">
+						<p>
+							<span class="label">尺寸</span> <span class="input"><?=$rs['o_size']?></span>
+						</p>
+					</li>
+						<?php for ($i=0;$i < count($attrArr);$i++):?>
+					<li class="process">
+						<p>
+							<span class="label"><?=$attrArr[$i]['a_name']?></span> <span
+								class="input"><?=$attrValue[$i]?></span>
+						</p>
+					</li>
+						<?php endfor;?>
+				</ul>
+				<ul class="cont-attr">
+					<li class="attr">
+						<p>
+							<span class="label">后加工工序</span> <span class="input"><?=$processInfo?></span>
+						</p>
+					</li>
+				</ul>
+			</div>
+			<div class="cleaner_h10"></div>
+			<div class="easyui-panel" title="" style="padding: 20px; overflow: hidden;background:#efefef;">
+				<p>
+					<span class="label">附件上传：</span><input type="file" id="file"
+						name="file" class="input_text easyui-tooltip" title="注：上传仅限于 *.rar,*.zip 格式，大小10M以内。"  />
+				</p>
+			</div>
+		</div>
+	</form>
+</body>
+</html>

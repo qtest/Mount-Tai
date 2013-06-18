@@ -1,0 +1,82 @@
+<include file="Include:Header" />
+<script language="javascript">
+$(document).ready(function(){
+	//$("#date").datepicker();
+	 //$('#date').datebox();
+	//$("#date").attr("value","<?=date('Y-m-d')?>");
+	$("#uname").attr("value","<?=$_SESSION['cmp']['u_name']?>");
+	 $('#money').numberbox({min:0,precision:2});
+		 	 
+});
+function submitForm(w){
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.data=="success"){
+					Maya.Msg({
+                        type : "success",
+                        msg : data.info,
+                        call : function(){
+                        	w.close();
+                        	freshIframe();
+                        }
+               		 });
+				}else{
+					Maya.Msg({
+                        type : "fail",
+                        msg : data.info
+                });	
+				}
+			},
+			"json"
+		);
+	return false;
+}
+</script>
+<div class="content">
+<form id="form" name="form" >
+    <div class="form_pad_10">
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td height="30" align="right">汇款日期：</td>
+            <td><input  type="date" class="input_text easyui-datebox" name="date" id="date" style="width:220px;" value="<?=date('Y-m-d')?>" />&nbsp;<span class="mustIn">*</span></td>
+        </tr>
+        <tr>
+            <td width="120" height="30" align="right">充值用户名：</td>
+            <td><input type="text" class="input_text" name="uname" id="uname" style="width:220px;" disabled />&nbsp;</td>
+        </tr>
+        <tr>
+            <td height="30" align="right">目标账户：</td>
+            <td><select class="input_text" name="my_account" id="my_account" style="width:230px;">
+            <?php foreach ($brr as $row):?>
+            	<option value="<?=$row['b_type']."(".$row['b_info'].")"?>"><?=$row['b_type']."(".$row['b_info'].")"?></option>
+            <?php endforeach;?>
+            	</select>&nbsp;<span class="mustIn">*</span>&nbsp;接收账户
+           	</td>
+        </tr>
+        <tr>
+            <td height="30" align="right">账户类型：</td>
+            <td><input  type="text" class="input_text" name="bank_type" id="bank_type" style="width:220px;" />
+            &nbsp;<span class="mustIn">*</span>&nbsp;银行名或支付宝
+            </td>
+        </tr>
+        <tr>
+            <td height="30" align="right">账号：</td>
+            <td><input  type="text" class="input_text" name="account" id="account" style="width:220px;" />
+            &nbsp;<span class="mustIn">*</span>&nbsp;贵公司账户
+            </td>
+        </tr>
+        <tr>
+            <td height="30" align="right">充值金额：</td>
+            <td><input  type="text" class="input_text" name="money" id="money" style="width:200px;" />&nbsp;元
+            &nbsp;<span class="mustIn">*</span></td>
+        </tr>
+        <tr>
+            <td height="30" align="right">备注说明：</td>
+            <td><input  type="text" class="input_text" name="desc" id="desc" style="width:220px;height:40px;" /></td>
+        </tr>
+    </table>
+    </div>
+</form>
+</div>

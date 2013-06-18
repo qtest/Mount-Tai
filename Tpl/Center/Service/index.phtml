@@ -1,0 +1,208 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$("#bankAdd").click(function(){
+        if($('#addBTr').html() != undefined){
+			return;
+        }
+        var tr = '<tr id="addBTr">';
+        tr += '<td height="30"><a href="#" title="取消" iconCls="icon-no" plain="true" onclick="'+"$('#addBTr').remove();"+'"><img src="__PUBLIC__/images/icons/cross_circle.png" /></a></td>';
+        tr += '<td><input id="type_add" type="text" class="input_text" /></td>';
+        tr += '<td><input id="info_add" type="text" class="input_text" style="width:200px;" /></td>';
+        tr += '<td><input id="name_add" type="text" class="input_text" /></td>';
+        tr += '<td><input id="desc_add" type="text" class="input_text" /></td>';
+        tr += '<td align="center"><input type="button" class="input_btn" id="saveB" onclick="addBank()" name="save" value="保存" /></td>';
+        tr += '</tr>';
+        $("#bankTb").append(tr);  
+    });
+	$(".ched").change(function(){
+        //alert($(this).val());
+        var stat = $(this)[0].checked;
+        //console.info(stat);return;
+        $.post(
+    			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+    			{id:$(this).attr('id'),b_status:stat},
+    			function(data){
+    				if(data.status=="1"){
+    					Maya.Msg({
+    						type : "success",
+    						msg : data.info,
+    						call : function(){
+    								
+    							//w.close();
+    							//freshIframe();
+    							//console.info("1111");
+    							//top.frames['centerIframe'].location.reload();
+    							//parent.$('#centerIframe').location.reload();
+    						}	
+    					});
+    				}else{
+    					Maya.Msg(data.info);	
+    				}
+    			},
+    			"json"
+    		);
+    	return;
+    });
+});
+function addBank(){
+	if($("#info_add").val().trim() ==""){
+		Maya.Msg("<strong>账号</strong> 不能为空");
+		return false;
+	}
+	if($("#type_add").val().trim() ==""){
+		Maya.Msg("<strong>账户类型</strong> 不能为空");
+		return false;
+	}
+	if($("#name_add").val().trim() ==""){
+		Maya.Msg("<strong>户名</strong> 不能为空");
+		return false;
+	}
+	$.post(
+			"<?=U('Service/checkBank')?>",
+			{
+				type:'add',
+				b_info:$("#info_add").val(),
+				b_type:$("#type_add").val(),
+				b_name:$("#name_add").val(),
+				b_desc:$("#desc_add").val(),
+			},
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							freshIframe();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+function saveInfo(id){
+	if($("#info_"+id).val().trim() ==""){
+		Maya.Msg("<strong>账号</strong> 不能为空");
+		return false;
+	}
+	if($("#type_"+id).val().trim() ==""){
+		Maya.Msg("<strong>账户类型</strong> 不能为空");
+		return false;
+	}
+	if($("#name_"+id).val().trim() ==""){
+		Maya.Msg("<strong>户名</strong> 不能为空");
+		return false;
+	}
+	$.post(
+			"<?=U('Service/checkBank')?>",
+			{
+				type:'edit',
+				id:id,
+				b_info:$("#info_"+id).val(),
+				b_type:$("#type_"+id).val(),
+				b_name:$("#name_"+id).val(),
+				b_desc:$("#desc_"+id).val(),
+			},
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							freshIframe();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+</script>
+</head>
+<body style="background: none;">
+<div class="content">
+	<div class="easyui-panel" title="汇款账户设置"
+		style="margin-bottom: 5px;" data-options="tools:'#toolBank'">
+			<table id="bankTb" border="0" cellpadding="0" cellspacing="0" class="tb">
+				<thead>
+					<tr>
+						<th width="25" height="30">状态</th>
+						<th width="150">类型</th>
+						<th>帐号</th>
+						<th width="100">户名</th>
+						<th width="150">备注</th>
+						<th width="40">操作</th>
+					</tr>
+				</thead>
+				<?php foreach ($bankArr as $row):?>
+				<tr style="height:35px;">
+					<td><input type="checkbox" class="ched" name="ched" id="<?=$row['id']?>" <?=$row['b_status'] == 1 ? "checked = 'true'" : ""?> value="1" /></td>
+					<td><input type="text" id="type_<?=$row['id']?>" name="b_type" class="input_text" value="<?=$row['b_type']?>" /></td>
+					<td><input type="text" id="info_<?=$row['id']?>" name="b_info" class="input_text" style="width:200px;" value="<?=$row['b_info']?>" /></td>
+					<td><input type="text" id="name_<?=$row['id']?>" name="b_name" class="input_text" value="<?=$row['b_name']?>" /></td>
+					<td><input type="text" id="desc_<?=$row['id']?>" name="b_desc" class="input_text" value="<?=$row['b_desc']?>" /></td>
+					<td align="center">
+						<a href="#" onclick="javascript:saveInfo('<?=$row['id']?>')" class="easyui-linkbutton easyui-tooltip" iconCls="icon-save" title="保存" plain="true" style="display: inline-block;" ></a>
+					</td>
+				</tr>
+				<?php endforeach;?>
+			</table>
+		<div id="toolBank">  
+	        <a href="javascript:void(0)" id="bankAdd" class="icon-add easyui-tooltip" title="增加账户信息"></a>
+	        <a href="#"></a>
+	    </div> 
+	</div>
+	<!-- <div class="easyui-panel" title="物流设置" collapsible="true" style="margin-bottom: 5px; padding: 0;"
+		data-options="tools:'#toolTransport'">
+		<table id="transTb" border="0" cellpadding="0" cellspacing="0" class="tb">
+				<thead>
+					<tr>
+						<th width="25" height="30">状态</th>
+						<th width="150">类型</th>
+						<th>帐号</th>
+						<th width="100">户名</th>
+						<th width="40">操作</th>
+					</tr>
+				</thead>
+				<tr>
+					<td height="30"><input type="checkbox" name="ched" id="ched_<?=$camArr[$i]['id']?>" value="<?=$camArr[$i]['id']?>" /></td>
+					<td><input type="text" id="b_name" name="b_name" class="input_text" value="支付宝" /></td>
+					<td><input type="text" id="b_name" name="b_name" class="input_text" style="width:200px;" value="622848 04316 5911 4919" /></td>
+					<td><input type="text" id="b_name" name="b_name" class="input_text" value="支付宝" /></td>
+					<td align="center">
+						<a href="#" class="easyui-linkbutton easyui-tooltip" iconCls="icon-edit" title="修改" plain="true" style="margin-bottom: 5px; display: inline-block;"
+						onclick="submitCheck('edit')"></a>
+					function addTrans(){
+					    $("#transAdd").click(function(){
+					         if($('#addTTr').html() != undefined){
+					 			return;
+					         }
+					         var tr = '<tr id="addTTr">';
+					         tr += '<td height="30"><a href="#" title="取消" iconCls="icon-no" plain="true" onclick="'+"$('#addTTr').remove();"+'"><img src="__PUBLIC__/images/icons/cross_circle.png" /></a></td>';
+					         tr += '<td><input type="text" class="input_text" /></td>';
+					         tr += '<td><input type="text" class="input_text" style="width:200px;" /></td>';
+					         tr += '<td><input type="text" class="input_text" /></td>';
+					         tr += '<td align="center"><input type="button" class="input_btn" id="saveT" onclick="addTrans()" name="save" value="保存" /></td>';
+					         tr += '</tr>';
+					         $("#transTb").append(tr);  
+					     });
+						alert("addTrans");
+					}
+					</td>
+				</tr>
+			</table>
+		<div id="toolTransport">  
+			<a href="javascript:void(0)" id="transAdd" class="icon-add easyui-tooltip" title="增加物流信息"></a>
+			<a href="#"></a>
+	    </div> 
+	</div> -->
+</div>
+</body>
+</html>

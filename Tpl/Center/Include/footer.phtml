@@ -1,0 +1,26 @@
+<div id="footer" style="text-align: center; line-height: 33px; color: #444;">
+            版权所有 © 2012-<?=date('Y')?> 
+            <a href="#"><?php echo C('MYCOMPANY');?></a>
+</div>
+<script type="text/javascript">
+// onclick="about()"
+function about(){
+	new Maya.Box({
+		text : "技术支持",
+		skin: "default",
+		url : "__PUBLIC__/About/about.html",
+		win : parent,
+		width : 600,
+		height : 220,
+		//iframeScroll : "no",
+		btns : [
+			{
+				text : "    确定    ",
+				onClick : function(w){
+    				w.close();
+				}	
+			}
+		]
+	});
+}
+</script>

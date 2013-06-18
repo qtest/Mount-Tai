@@ -1,0 +1,162 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	//$('.bgloader').fadeOut(500);
+});
+function submitForm(){
+	<?php if($_SESSION['cmp']): ?>
+	//console.info($("#form").formSerialize());
+	$.post(
+			"<?=U(MODULE_NAME.'/stickerPrice')?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							showResult(data.data);
+						}
+					});
+				}else{
+					Maya.Msg({
+						msg : data.info,
+						call : function(){
+						}	
+					});	
+					
+				}
+			},
+			"json"
+		);
+	return true;
+	<?php else:?>
+	loginBtn('<?=U ( "Login/panel" )?>');
+	return false;
+	<?php endif;?>
+}
+
+function showResult(id){
+	top._offerResult = new Maya.Box({
+		text : "报价结果详细信息",
+		url : "<?=U(MODULE_NAME.'/result')?>/id/"+id,
+		win : top,
+		width : 750,
+		height : 220,
+		btns : [
+			<?php if($_SESSION ['cmp'] ['g_manager'] == 1):?>
+			{
+				text : ' 详细信息(内部)',
+				onClick : function(w){
+					w.getIframe().showAll(w);
+					// _self.close();
+				}	
+			},
+			<?php endif;?>
+    		{
+				text : "    生成订单    ",
+				onClick : function(w){
+					w.getIframe().submitShopping(w,top);
+					// _self.close();
+				}	
+			},
+			{
+				text : "    取消    ",
+				isCancel:true
+			}
+		]
+	});
+}
+
+function change(node){
+	//console.info(node);return;
+	$.get(
+			"<?=U(MODULE_NAME.'/getKeZhong')?>",
+			{id:node.id,proId:'<?=$_GET['id']?>'},
+			function(data){
+				//console.info(data);loadData
+				$('.kezhong').combobox('loadData',data);
+			},
+			"json"
+		);
+}
+
+function checkMust(e){
+	$(e).attr('checked',true);
+}
+
+function showCheck(the,str,com,nm){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('enable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('enable');
+		}
+	}else{
+		$("#"+str).css("display","none");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('disable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('disable');
+		}
+	}
+}
+function showCheckAttr(the,str,id){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+		if(id != undefined && id != ''){
+			$('#'+id).combobox('clear');
+			$('#'+id).combobox('disable');
+		}
+	}else{
+		$("#"+str).css("display","none");
+		if(id != undefined && id != ''){
+			$('#'+id).combobox('enable');
+		}
+	}
+}
+</script>
+<style type="text/css">
+body {
+	font-size: 12px;
+}
+</style>
+<include file="Include:toper" />
+<div style="width: 90%; margin: 0 auto; *zoom: 1; position: relative;">
+	<div class="main_panel"
+		style="width: 220px; position: absolute; left: 0; top: 0; clear: both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<ul>
+					<li class="header"><span>技术支持</span></li>
+					<li>
+						<div>
+							<a href="<?=U('Support/question')?>">常见问题<span>/ Q&A</span></a>
+						</div>
+					</li>
+					<li>
+						<div>
+							<a href="<?=U('Support/information')?>">印刷知识<span>/ information</span></a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="main_panel" style="margin-left: 240px; clear: both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<form id="form" name="form">
+					<include file="viewPage" />
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="clear"></div>
+<include file="Include:footer" />
+</body>
+</html>

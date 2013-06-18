@@ -1,0 +1,112 @@
+<include file="Include:header" />
+<style type="text/css">
+html {
+	background: #fff;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.price').numberbox({min:0,precision:2});
+	<?php if(isset($rs)):?>
+		editStatus();
+	<?php endif;?>
+});
+function editStatus(){
+	$("#p_name").attr("value","<?=$rs['p_name']?>");
+	$("input[name='p_status'][value=<?=$rs['p_status']?>]").attr("checked",true); 
+	$("input[name='sizeDIY']").attr("checked",<?=$rs['sizeDIY'] == 1 ? 'true' : 'false' ?>); 
+	$("input[name='numDIY']").attr("checked",<?=$rs['numDIY'] == 1 ? 'true' : 'false' ?>); 
+	$("input[name='ismust']").attr("checked",<?=$rs['ismust'] == 1 ? 'true' : 'false' ?>);
+	$("#combo_name").attr("value","<?=$rs['combo_name']?>");
+	$("#p_unit").attr("value","<?=$rs['p_unit']?>");
+	$("#p_desc").attr("value","<?=$rs['p_desc']?>");
+}
+
+function submitForm(w){
+	if($("#p_name").val()==""){
+		Maya.Msg("<strong>工序名称</strong> 不能为空");
+		return false;
+	}
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							w.close();
+							//freshIframe();
+							//console.info("1111");
+							//top.frames['centerIframe'].location.reload();
+							//parent.$('#centerIframe').location.reload();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+</script>
+</head>
+<body>
+	<div>
+		<form id="form" name="form">
+			<input type="hidden" name="type" id="type" value="<?=$_GET['type']?>" />
+			<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+			<div class="p10">
+				<table border="0" cellpadding="0" cellspacing="0"
+					style="margin: 5px;">
+					<tr>
+						<td width="100" height="30" align="right">工序名称：</td>
+						<td ><input type="text" name="p_name" id="p_name"
+							class="input_text" style="width: 200px;" /></td>
+						<td width="100" align="right">组合名称：</td>
+						<td><input type="text" name="combo_name" id="combo_name"
+							class="input_text easyui-tooltip" title="组合属性单选名称"  value="" /></td>
+					</tr>
+					<tr>
+						<td height="30" align="right">单价：</td>
+						<td><input type="text" name="p_price" id="p_price" class="input_text price" style="width: 60px;" value="<?=$rs['p_price']?>" /> 元/
+							<select name="p_unit" id="p_unit" style="width: 80px;">
+                            	<option value="印">印</option>
+                            	<option value="千印">千印</option>
+                            	<option value="本">本</option>
+                            	<option value="平米">平米(㎡)</option>
+                          </select>
+						</td>
+						<td width="100" align="right">状态：</td>
+						<td><label style="color: #438787;"><input name="p_status" id="zb"
+								type="radio" value="1" checked="checked" /> 启用</label> <label
+							style="color: #ff0000;"  class="easyui-tooltip" title="停用后在项目属性中不可见"><input name="p_status" id="bz" type="radio" value="0" /> 停用</label></td>
+					</tr>
+					<tr>
+						<td height="30" align="right">起步价：</td>
+						<td><input type="text" name="p_minFee" id="p_minFee" class="input_text price" value="<?=$rs['p_minFee']?>" /> 元</td>
+						<td width="100" align="right">其它费用：</td>
+						<td><input type="text" name="p_otherFee" id="p_otherFee" class="input_text price" value="<?=$rs['p_otherFee']?>" /> 元</td>
+					</tr>
+					<tr>
+						<td height="35" align="right"></td>
+						<td colspan="3" align="center">
+							<label style="margin-right:20px;" class="easyui-tooltip" title="是否为必选项"><input name="ismust" id="ismust" type="checkbox" value="1" />&nbsp;&nbsp;必选</label>
+							<label style="margin-right:20px;" class="easyui-tooltip" title="是否可以自定义尺寸"><input name="sizeDIY" id="sizeDIY" type="checkbox" value="1" />&nbsp;&nbsp;自定义尺寸</label>
+							<label class="easyui-tooltip" title="是否可以自定义数量"><input name="numDIY" id="numDIY" type="checkbox" value="1" />&nbsp;&nbsp;自定义数量</label>
+							<label class="easyui-tooltip" title="是否可以附加说明"><input name="hasDesc" id="hasDesc" type="checkbox" value="1" />&nbsp;&nbsp;可附加说明</label>
+						</td>
+					</tr>
+					<tr>
+						<td height="45" align="right">备注：</td>
+						<td colspan="3"><textarea id="p_desc" name="p_desc"
+								class="input_text" style="width: 95%; height: 40px;"></textarea></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

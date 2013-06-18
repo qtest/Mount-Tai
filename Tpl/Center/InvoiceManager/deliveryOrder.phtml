@@ -1,0 +1,139 @@
+<include file="Include:header" />
+<style>
+html {
+	background:none;
+}
+
+.tbb {
+	border-collapse: collapse;
+}
+
+.tbb td {
+	padding:5px;
+	font-size: 12px;
+	border: 1px solid #999;
+}
+.tbb th {
+	padding:5px;
+	font-size: 13px;
+	background:#efefef;
+	border: 1px solid #999;
+}
+.input_text{width:95%;}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	print();
+}
+</script>
+<body>
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" style="display: none" id="id" name="id" value="<?=$row['id']?>">
+		<input type="hidden" style="display: none" id="order_id" name="order_id" value="<?=$row['order_id']?>">
+		<input type="hidden" style="display: none" id="print" name="print" value="<?=$row['is_print']?>">
+		<div style="position: absolute; top: 10px; left: 20px;font-size: 12px; height: 60px; width: 300px; color: #444; text-align: left;">
+			<h3 style="font-size: 23px;font-weight:normal;">
+      			<?=C('MYCOMPANY')?>
+    		</h3>
+			无锡市北塘区江海西路民丰桥西<br />
+			<b>Tel:</b>&nbsp;15306175188&nbsp;&nbsp;<b>Fax:</b>&nbsp;051083111107<br />
+		</div>
+		<div style="position: absolute; top: 20px; right: 20px;font-size: 12px; height: 60px; width: 180px; color: #444; text-align: center;">
+			<h3 style="font-size: 18px;Letter-spacing: 10px;">
+      			[送货单]
+    		</h3>
+    		<img alt="" src="<?=U('Barcodegen/index')?>/num/<?=$otherInfo['number']?>" style="height:20px;width:160px;margin:3px 0;">
+			<b>NO.<?=date("YmdHi")?></b><br />
+			<table style=" font-size: 12px;">
+				<tr>
+					<td width="5">&nbsp;</td>
+					<td height="15" width="65" align="right">制单人员:</td>
+					<td width="100" align="left"><?=$otherInfo['makeUser']?></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td height="15" align="right">送货日期:</td>
+					<td align="left"><?=$otherInfo['create_date']?></td>
+				</tr>
+			</table>
+		</div>
+		<div style="padding: 80px 0 5px 20px; color: #444; text-align: left;">
+			<table style=" font-size: 13px;">
+				<tr>
+					<td height="15" width="65" align="right">客户名称：</td>
+					<td width="200" align="left"><?=$otherInfo['customer']?></td>
+					<td width="65" align="right">联系方式：</td>
+					<td align="left"><?=$otherInfo['telPhone']?></td>
+				</tr>
+				<tr>
+					<td height="15" align="right">客户地址：</td>
+					<td colspan="3" align="left"><?=$otherInfo['address']?></td>
+				</tr>
+			</table>
+		</div>
+		<div class="content" style="padding-top: 0;">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbb">
+				<thead>
+					<tr>
+						<th width="40">序号</th>
+						<th width="200" align="left">产品名称</th>
+						<th width="100">规格</th>
+						<th width="40">单位</th>
+						<th width="60">数量</th>
+						<th width="50">单价</th>
+						<th width="60">金额</th>
+						<th align="left">备注</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$priceCount = 0;
+					for($i=0;$i<6;$i++):
+					$priceCount = $i >= count($arr) ? $priceCount : $priceCount + $arr[$i]['o_price'];
+					?>
+					<tr>
+						<td height="20" align="center"><?=$i < count($arr) ? $i+1 : ""?></td>
+						<td><?=$arr[$i]['label_name']?></td>
+						<td align="center"><?php $a = explode(" ", $arr[$i]['cus_size']);echo $a[1];?></td>
+						<td align="center"><?=$arr[$i]['finel_unit']?></td>
+						<td align="center"><?=$arr[$i]['number']?></td>
+						<td align="center"><?=$i < count($arr) ? getCheckNum4Float($arr[$i]['o_price']/$arr[$i]['number']) : ""?></td>
+						<td align="center"><?=$arr[$i]['o_price']?></td>
+						<td><?=$arr[$i]['comment']?></td>
+					</tr>
+					<?php endfor;?>
+					<tr>
+						<td height="25" colspan="6" align="left" style="border-right: 0;font-size:16px;"><b>合计：<?=numberToBigString(round($priceCount,1))?>整</b></td>
+						<td colspan="2" style="border-left: 0;font-size:16px;"><b>小写金额：<?=round($priceCount,1)?></b></td>
+					</tr>
+				</tbody>
+			</table>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" class="tbb">
+				<tr>
+					<td align="left" style="border: 0;">注：以上货品请仔细核对，请在三天内通知本公司，逾期恕不负责</td>
+					<td width="150" style="border-top: 0;">上期结余：<?=$otherInfo['last_maney']?></td>
+					<td width="150" style="border-top: 0;">本期余额：<?=$otherInfo['now_maney']?></td>
+				</tr>
+			</table>
+			<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
+				<tr>
+					<td width="50" valign="top">送货单位</td>
+					<td width="45" rowspan="2" valign="top" style="padding-top:10px;">（盖章）</td>
+					<td width="250" rowspan="2" valign="top"></td>
+					<td width="50" valign="top">收货单位</td>
+					<td width="45" rowspan="2" valign="top" style="padding-top:10px;">（盖章）</td>
+					<td width="250" rowspan="2" valign="top"></td>
+				</tr>
+				<tr>
+					<td height="50" valign="top">及经手人</td>
+					<td valign="top">及经手人</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

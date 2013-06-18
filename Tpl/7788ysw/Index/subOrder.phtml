@@ -1,0 +1,118 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+function submitForm(w){
+	$('.bgloader').show(500);
+	$('#form').ajaxSubmit({
+		url:"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+		success:function(data){
+			if(data.status=="1"){
+				Maya.Msg({
+					type : "success",
+					msg : data.info,
+					call : function(){
+						//parent.location.reload();	
+						w.close();
+						//console.info("1111");
+						freshShoppingAmount("<?=U(MODULE_NAME.'/freshCarAmount')?>");
+						$('.bgloader').fadeOut(500);
+					}	
+				});
+			}else{
+				Maya.Msg(data.info);	
+			}
+		},
+		error:function(){
+			Maya.Msg("操作失败！");	
+		}
+	});
+	return;
+}
+</script>
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.cart-empty {
+	height: 98px;
+	border: 1px solid #ddd;
+}
+
+.cart-empty .message {
+	height: 98px;
+	padding-left: 341px;
+	background: #f3f3f3 url(__PUBLIC__/images/car/cart-empty-bg.png)
+		no-repeat 250px 22px;
+}
+
+.cart-empty .message p {
+	line-height: 98px;
+}
+</style>
+</head>
+<body style="background: none; padding: 10px;">
+	<div class="bgloader"></div>
+	<form id="form" name="form">
+		<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+		<div
+			style="position: absolute; top: 10px; right: 20px; height: 60px; width: 300px; color: #7A7A7A; text-align: right;">
+			<h3 style="font-size: 20px;"><?=C('MYCOMPANY')?></h3>
+			<span style="margin: 0 30px 0 0;">因为专业，所以放心</span>
+		</div>
+		<div
+			style="width: 300px; padding: 5px 0 5px 30px; color: #444; text-align: left;">
+			<h2 style="font-size: 15px;">
+				订单编号<span style="margin-left: 20px; font-size: 12px;"><?=$orderInfo['o_number']?></span>
+			</h2>
+			订单金额（不含税、不含运费）：<b style="color: #ff0000; font-size: 20px;">￥<?=$count?></b>
+		</div>
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"
+			class="tb">
+			<thead>
+				<tr>
+					<!-- 会员号 用户名 所在组 公司名称 地区 联系人 QQ 登录/报价  -->
+					<th width="30" align="center"></th>
+					<th align="left"><strong>项目内容</strong></th>
+					<th align="center" width="110"><strong>金额</strong></th>
+					<th align="center" width="150"><strong>已有附件</strong></th>
+					<th align="center" width="150"><strong>文件</strong></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			$i = 0;
+			foreach ( $ofArr as $row ) :
+				$i ++;
+				?>
+				<tr style="height: 50px;">
+					<td align="center"><?=$i?></td>
+					<td align="left">
+						<b style="font-size: 14px;"><?= $row['p_name']."<br />"?></b><?=$row['attrInfo']?>
+						<br /><?=$row['processInfo']?>
+					</td>
+					<td align="center">￥<?= $row['o_price'] ?></td>
+					<td align="center"><?php if(empty($row['o_filePath'])): ?>--<?php else:?><a href="__ROOT__/<?=$row['o_filePath']?>" class="easyui-tooltip" title="点击下载 "><?=$row['o_fileName']?></a><?php endif;?></td>
+					<td>
+						附件上传：<input type="file" id="file_<?=$row['id']?>" style="width:110px;" name="file_<?=$row['id']?>" class="input_text easyui-tooltip" title="注：上传仅限于 *.rar,*.zip 格式，大小10M以内。" />
+					</td>
+				</tr>
+			<?php endforeach; ?>
+        </tbody>
+		</table>
+		<!-- 分页文字 -->
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="right" width="100">订单补充：</td>
+					<td align="right" style="padding: 0 50px 0 0;"><textarea id="o_desc" name="o_desc" rows=""
+							cols="" class="input_text" style="height: 50px; width: 99%;"></textarea>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

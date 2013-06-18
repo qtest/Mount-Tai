@@ -1,0 +1,200 @@
+<include file="Include:header" />
+<script language="javascript">
+function submitCheck(){
+	<?php if($_SESSION['cmp']): ?>
+		if( $("#length").val()=="" ){
+			Maya.Msg("请填写 <strong>产品尺寸：长</strong>！");
+			$("xx").focus();
+			return false;
+		}
+		if($("#width").val()=="" ){
+			Maya.Msg("请填写 <strong>产品尺寸：宽</strong>！");
+			$("yy").focus();
+			return false;
+		}
+		if($("#shuliang").val()==""){
+			Maya.Msg("请填写 <strong>数量</strong>！");
+			$("#shuliang").focus();
+			return false;
+		}
+		$.post(
+				"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+				$("#myform").formSerialize(),
+				function(data){
+					if(data.status=="1"){
+						Maya.Msg({
+	                        type : "success",
+	                        msg : data.info,
+	                        sec : 1.5,
+	                        call : function(){
+	                        	$.ajax({
+	                    			type: "GET",
+	                    			dataType : "html",
+	                    			data:{'pid':data.data},
+	                    			async : true,
+	                    			url: "<?=U(MODULE_NAME.'/result')?>",
+	                    			success: function(res){
+	                    				$("#resultContent").html(res);
+	                    			},
+	                    			error : function(res,msg,err) {
+		                    			
+	                    			}
+	                    		});
+	                        }
+	               		 });
+					}else{
+						Maya.Msg({
+	                        type : "fail",
+	                        msg : data.info
+	                });	
+					}
+				},
+				"json"
+			);
+		return false;
+	<?php else:?>
+		loginBtn('<?=U ( "Login/panel" )?>');
+		return false;
+	<?php endif;?>
+}
+//单选
+function disCheck(the,str){
+	if (str=="zhijiao"){
+		$("#zdd1").css("display","none");
+	}else{
+		$("#zdd1").css("display","");
+	}
+}
+//显示后加工后附加XY值
+function showCheck(the,str){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+	}else{
+		$("#"+str).css("display","none");
+	}
+}
+//单选单双面选择
+function dxian(the){
+	if (the.checked){
+		var obj=$$("input");   
+		for(i=0;i<obj.length;i++){     
+			if (obj[i].type=="checkbox" && obj[i].checked && obj[i].value.indexOf('面')>0){
+				obj[i].checked =false;
+			}
+	
+		} 
+		the.checked=true;
+	}
+}
+</script>
+
+
+</head>
+
+<body>
+	<div class="content">
+		<div class="body_title">
+			<h1>
+				专版不干胶自动报价 <em>彩色贴纸、标签、商标、条码贴纸、特殊不干胶</em>
+			</h1>
+		</div>
+		<form name="myform" id="myform">
+			<input type="hidden" id="pid" name="pid" value="{$pid}">
+			<div class="tag">筛选</div>
+			<div class="tagc">
+				<table width="100%" border="0" align="center" cellpadding="0"
+					cellspacing="0" class="tb_big">
+					<tbody>
+						<tr>
+							<th>产品尺寸（长×宽）MM</th>
+							<th>印刷数量</th>
+							<th>单双面</th>
+							<th>印刷颜色</th>
+							<th>材料名称</th>
+						</tr>
+						<tr>
+							<td><input name="length" type="text" class="inputs" id="length"
+								value="60" size="5" /> X <input name="width" type="text"
+								class="inputs" id="width" value="30" size="5" /></td>
+							<td><input name="shuliang" type="text" id="shuliang"
+								value="10000" size="9" maxlength="7" /></td>
+							<td><select name="danmian" id="danmian">
+									<option value="单面">单面</option>
+							</select></td>
+							<td><select name="danse" id="danse">
+									<option value="单色">单色</option>
+									<option value="双色">双色</option>
+									<option value="三色">三色</option>
+									<option value="四色">四色</option>
+									<option value="彩色" selected="">彩色</option>
+							</select></td>
+							<td><select name="cailiao" id="cailiao">
+								<?php foreach($materArr as $row):?>
+									<option value="<?=$row['id']?>"><?=$row['m_name']?></option>
+								<?php endforeach;?>
+							</select></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+			<div class="tag">后道工序选择</div>
+			<div class="tagc" style="margin-bottom: 0;">
+				<table width="100%" border="0" align="center" cellpadding="5"
+					cellspacing="0" class="tb_big">
+					<tr>
+						<td><label><input name="sj" type="checkbox" id="sj" disabled=""
+								value="需要设计" onClick="ShowHjgXY(this,'sjlx')" /> 我要设计</label> <select
+							name="sjlx" id="sjlx" class="HjgXY" style="display: none;">
+								<option value="1">模板设计(简单)</option>
+								<option value="2" selected="selected">来样设计(一般)</option>
+								<option value="3">创意设计(复杂)</option>
+						</select></td>
+						<td><label><input name="qjg" type="radio" id="zhijiao"
+								onChange="disCheck(this,'zhijiao')" value="切成品" checked /> (直角) 切成品</label>
+							<label><input name="qjg" type="radio" id="yuanjiao"
+								onClick="disCheck(this,'yuanjiao')" value="模切"  /> (圆角)
+								模切‖啤异型 </label> <select name="zdd1" id="zdd1" style="display: none;">
+								<option value="简单边框">简单边框</option>
+								<option value="盒型吊牌">盒型吊牌</option>
+								<option value="复杂形态">复杂形态</option>
+						</select></td>
+						<td><label><input name="hjg" type="radio" id="lm" value="单面覆亮膜"
+								checked />单面覆亮膜</label> <label><input name="hjg" type="radio"
+								id="gy" value="单面过光油" />单面过光油</label> <label><input name="hjg"
+								type="radio" id="ym" value="单面覆哑膜" />单面覆哑膜</label></td>
+					</tr>
+					<tr>
+						<td><label><input name="tj" type="checkbox" id="tj" value="烫金"
+								onClick="showCheck(this,'tjxy')" /> 烫金</label> <span id="tjxy"
+							style="display: none;"> <input name="tjx" type="text" id="tjx"
+								size="4"> × <input name="tjy" type="text" id="tjy" size="4"> mm
+						</span></td>
+						<td><label><input name="uv" type="checkbox" id="uv" value="局部UV"
+								onClick="showCheck(this,'uvxy')" /> 局部ＵＶ </label> <span
+							id="uvxy" style="display: none;"> <input name="uvx" type="text"
+								id="uvx" size="4" /> × <input name="uvy" type="text" id="uvy"
+								size="4" /> mm
+						</span></td>
+						<td><label><input name="qf" type="checkbox" id="qf" value="去废" />去废</label>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="center">&nbsp;</td>
+					<td align="right" width="150"><a href="javascript:void(0);"
+						onclick="javascript:submitCheck();" plain="true"
+						iconCls="icon-add" class="easyui-linkbutton">自助报价</a></td>
+				</tr>
+			</table>
+		</div>
+		<div id="resultContent" style="overflow:auto;height:400px;">
+			
+		</div>
+	</div>
+</body>
+</html>

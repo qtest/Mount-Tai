@@ -1,0 +1,346 @@
+<include file="Include:header" />
+<script language="javascript">
+function CheckForm(){
+	<?php if($_SESSION['wxpsi']): ?>
+	if($("isdiy").checked==false && document.myform.chichun.value==""){
+		alert("请选择尺寸！");
+		document.myform.chichun.focus();
+		return false;
+	}else if($("isdiy").checked && $("xx").value=="" ){
+		alert("请输入自定义长！");
+		$("xx").focus();
+		return false;
+	}else if($("isdiy").checked && $("yy").value=="" ){
+		alert("请输入自定义宽！");
+		$("yy").focus();
+		return false;
+	}else if(document.myform.shuliang.value==""){
+		alert("请输入数量！");
+		document.myform.shuliang.focus();
+		return false;
+	}
+	return true;
+	<?php else:?>
+		loginBtn('<?=U ( "Login/panel" )?>');
+		return false;
+	<?php endif;?>
+}
+function showXY()
+{
+	var aa = $("chichun").value
+	if (aa!=""){
+		var aa = aa.split('*');
+		$("xx").value = aa[0];
+		$("yy").value = aa[1];
+	}
+	
+	if ($("isdiy").checked){
+		$("dis").style.display = "block";
+		$("chichun").disabled=true;
+	}else{
+		$("chichun").disabled=false;
+		$("dis").style.display = "none";
+		
+	}
+}
+//单选
+function dian(the,str){
+$(str).checked=!the.checked;
+	if (str=="zdd1"){
+		ShowHjgXY(the,'byx');
+	}else{
+		$("#byx").style.display="none";
+	}
+   if($("#zdd2").checked==true)$("#byx").style.display="";
+} 
+function getPrice(){
+	alert("sdv");
+}
+//显示后加工后附加XY值
+function ShowHjgXY(the,str){
+	if (the.checked){
+		$("#"+str).style.display = "inline";
+	}else{
+		$("#"+str).style.display = "none";
+	}
+	
+}
+//单选单双面选择
+function dxian(the){
+	if (the.checked){
+		var obj=$$("input");   
+		for(i=0;i<obj.length;i++){     
+			if (obj[i].type=="checkbox" && obj[i].checked && obj[i].value.indexOf('面')>0){
+				obj[i].checked =false;
+			}
+	
+		} 
+		the.checked=true;
+	}
+}
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="body_title">
+			<h1>无碳联单自动报价 <em>送货单、订货单、合同、收据、购物小票</em></h1>
+		</div>
+		<form action="" method="post" name="myform" id="myform"
+			onsubmit="return CheckForm1();">
+
+			<div class="tag">筛选</div>
+			<div class="tagc">
+				<table width="100%" border="0" align="center" cellpadding="0"
+					cellspacing="0" class="tb_big">
+					<tbody>
+						<tr>
+							<th>成品尺寸（长×宽）MM</th>
+							<th>印刷数量</th>
+							<th>每本页数</th>
+							<th>联数</th>
+							<th>单双面</th>
+							<th>印刷颜色</th>
+						</tr>
+						<tr>
+							<td><select name="chichun" id="chichun" onchange="showXY()">
+									<option value="88*128">72开(88×128)</option>
+									<option value="105*145">64开(105×145)A6</option>
+									<option value="210*95">48开(210×95)</option>
+									<option value="210*140">32开(210×140)A5</option>
+									<option value="210*285">16开(210×285)A4</option>
+									<option value="420*285">8开(420×285)A3</option>
+									<option value="95*130">正度64开(95×130)</option>
+									<option value="88*190">正度48开(88×190)</option>
+									<option value="190*130" selected="">正度32开(190×130)</option>
+									<option value="265*190">正度16开(265×190)</option>
+									<option value="265*380">正度8开(265×380)</option>
+							</select> <input name="isdiy" type="checkbox" id="isdiy"
+								value="1" onclick="showXY()"> <label for="isdiy"
+								style="position: relative;"><font color="#FF0000">自定义尺寸</font></label>
+								<br>
+
+								<div id="dis">
+									<input name="xx" type="text" id="xx" size="5" value="190"
+										class="inputs"> X <input name="yy" type="text" id="yy"
+										size="5" value="130" class="inputs"> mm
+								</div></td>
+							<td><input name="shuliang" type="text" id="shuliang" value="100"
+								size="8" maxlength="7"> 本</td>
+							<td><div style="position: relative;">
+
+									<select style="width: 64px;"
+										onchange="$('neips').value=this.value;$('neips').select();">
+										<option value="30">30页/本</option>
+										<option value="50">50页/本</option>
+										<option value="90">90页/本</option>
+										<option value="99">99页/本</option>
+										<option value="100" selected="selected">100页/本</option>
+										<option value="150">150页/本</option>
+										<option value="200">200页/本</option>
+									</select>
+
+
+
+									<div
+										style="z-index: 10; position: absolute; height: 20px; left: 2px; top: 3px;">
+										<iframe
+											style="position: absolute; z-index: -1; width: 44px; height: 16px; left: 1px; top: 1px; scrolling: no;"
+											frameborder="0"></iframe>
+										<input name="neips" id="neips"
+											style="width: 44px; height: 16px; border: 0;" value="100"
+											size="4" maxlength="4">
+									</div>
+								</div></td>
+							<td><select name="lians" id="lians">
+									<option value="2">二联</option>
+									<option value="3" selected="selected">三联</option>
+									<option value="4">四联</option>
+									<option value="5">五联</option>
+									<option value="6">六联</option>
+									<option value="7">七联</option>
+									<option value="8">八联</option>
+									<option value="9">九联</option>
+							</select></td>
+							<td><select name="danshuang">
+									<option value="1" selected="selected">单面</option>
+									<option value="2">双面</option>
+							</select></td>
+							<td><select name="ysys" id="ysys">
+									<option value="1" selected="selected">单色</option>
+									<option value="2">双色</option>
+									<option value="3">三色</option>
+									<option value="4">彩色</option>
+							</select></td>
+						</tr>
+				
+				</table>
+			</div>
+			<div class="tag">后道工序选择</div>
+			<div class="tagc" style="margin-bottom: 0;">
+				<table width="100%" border="0" align="center" cellpadding="5"
+					cellspacing="0" class="tb_big">
+					<tbody>
+						<tr>
+							<td><input name="hjg" type="checkbox" id="hjgsj" value="需要设计"
+								onclick="ShowHjgXY(this,'sjlx')" disabled=""> 我要设计 <select
+								name="sjlx" id="sjlx" class="HjgXY">
+									<option value="1">模板设计(简单)</option>
+									<option value="2" selected="selected">来样设计(一般)</option>
+									<option value="3">创意设计(复杂)</option>
+							</select> <input name="hjg" type="checkbox" disabled="" id="hjg"
+								onclick="return false" value="装订" checked=""> 装订(必选)</td>
+							<td><input name="hjg" type="checkbox" id="czfmshow" value="卡纸封面">
+								卡纸封面</td>
+							<td><input name="hjg" type="checkbox" id="hjg" value="彩色联单打号码">
+								彩色联单打号码</td>
+							<td><input name="hjg" type="checkbox" id="hjg" value="压痕压点线">
+								压痕压点线</td>
+							<td><input name="hjg" type="checkbox" id="hjg" value="内容到边"> 内容到边</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="center" width="150"><a href="javascript:void(0);"
+						onclick="getPrice();" title="选择好上面的参数，马上为你实时报价" plain="true"
+						iconCls="icon-add" class="easyui-linkbutton">自助报价</a></td>
+					<td align="right">&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="pricelist" style="display: none;">
+		<ul class="bjbt">
+			<li id="iCity" style="display: none;"><select name="province"
+				id="province"></select><select name="city" id="city"
+				onchange="selectcity(this);"></select></li>
+			<li><a href="javascript:void(0);" onclick="getPrice();"
+				title="选择好上面的参数，马上为你实时报价">自助报价</a></li>
+			<li id="loging"></li>
+			<li id="pages"></li>
+		</ul>
+		<div id="nodata" style="display: none"></div>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0"
+			id="showprice" style="display: none">
+			<tbody>
+				<tr>
+					<td width="120" id="otherpid" style="display: none" valign="top"><div
+							class="p1">
+							<ul id="vids"></ul>
+						</div></td>
+					<td valign="top" class="myprice"><div id="GroupTabs"
+							style="display: none">
+							<ul class="Group" id="GroupList">
+								<li><a onclick="GroupTab(this,0)" class="cur"><em><span>默认组</span></em></a></li>
+							</ul>
+							<div
+								style="background: #deecfd; height: 2px; overflow: hidden; border-top: 1px solid #8db2e3;"></div>
+						</div>
+						<table width="100%" border="0" align="center" cellpadding="0"
+							cellspacing="0" class="stable">
+							<tbody>
+								<tr align="center">
+									<td colspan="3" rowspan="3"><span id="showx"><table
+												width="100%" border="0" cellpadding="0" cellspacing="0"
+												class="stable">
+												<tbody>
+													<tr align="center">
+														<td width="18%"><strong>数量</strong></td>
+														<td width="18%"><strong>单价（元）</strong></td>
+														<td width="18%"><strong>总价（元）</strong></td>
+													</tr>
+													<tr align="center">
+														<td class="thisprice" id="shuliang0">&nbsp;</td>
+														<td class="thisprice" id="danjia0">&nbsp;</td>
+														<td class="thisprice" id="sprice0">&nbsp;</td>
+													</tr>
+													<tr align="center">
+														<td id="shuliang1">&nbsp;</td>
+														<td id="danjia1">&nbsp;</td>
+														<td id="sprice1">&nbsp;</td>
+													</tr>
+													<tr align="center">
+														<td id="shuliang2">&nbsp;</td>
+														<td id="danjia2">&nbsp;</td>
+														<td id="sprice2">&nbsp;</td>
+													</tr>
+													<tr align="center">
+														<td id="shuliang3">&nbsp;</td>
+														<td id="danjia3">&nbsp;</td>
+														<td id="sprice3">&nbsp;</td>
+													</tr>
+													<tr align="center">
+														<td id="shuliang4">&nbsp;</td>
+														<td id="danjia4">&nbsp;</td>
+														<td id="sprice4">&nbsp;</td>
+													</tr>
+												</tbody>
+											</table></span></td>
+									<td width="50%" class="thisprice" id="company">&nbsp;</td>
+								</tr>
+								<tr align="center">
+									<td class="thisprice" id="adtitle">&nbsp;</td>
+								</tr>
+								<tr align="center">
+									<td><div id="ad2" class="ad2"></div></td>
+								</tr>
+								<tr>
+									<td colspan="4"><table width="100%" border="0" cellpadding="0"
+											cellspacing="0" class="stable" id="GroupTitle"
+											style="display: none">
+											<tbody>
+												<tr>
+													<td align="right" width="80">可送货区域：</td>
+													<td id="adtitle3">sdf</td>
+													<td align="right" width="70">强 项：</td>
+													<td id="myitems">&nbsp;</td>
+													<td style="display: none" align="right" width="70">质量宣言：</td>
+													<td style="display: none" id="adtitle2">ddd</td>
+												</tr>
+												<tr>
+													<td align="right">交货时间：</td>
+													<td id="Deliverytime">&nbsp;</td>
+													<td align="right">优惠活动1：</td>
+													<td id="adtitle4">&nbsp;</td>
+												</tr>
+												<tr>
+													<td align="right">结款方式：</td>
+													<td id="adtitle5">&nbsp;</td>
+													<td align="right">优惠活动2：</td>
+													<td id="adtitle6">&nbsp;</td>
+												</tr>
+											</tbody>
+										</table>
+										<table width="100%" border="0" cellpadding="0" cellspacing="0"
+											class="stable" id="CompanyTitle" style="display: none">
+											<tbody>
+												<tr>
+													<td align="right" width="70">联系电话：</td>
+													<td id="TEL">&nbsp;</td>
+													<td align="right" width="70">联系人：</td>
+													<td id="truename">&nbsp;</td>
+												</tr>
+												<tr>
+													<td align="right">联系ＱＱ：</td>
+													<td id="QQ">&nbsp;</td>
+													<td align="right">地 址：</td>
+													<td id="Address">&nbsp;</td>
+												</tr>
+											</tbody>
+										</table> <span id="od"></span></td>
+								</tr>
+							</tbody>
+						</table></td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="ad6" style="display: none"></div>
+	</div>
+
+
+
+</body>

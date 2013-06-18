@@ -1,0 +1,187 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	
+});
+function submitForm(){
+	console.info($("#form").formSerialize());
+	$.post(
+			"<?=U(MODULE_NAME.'/stickerPrice')?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : "操作成功",
+						call : function(){
+							location.reload();	
+							//w.close();
+							//console.info("1111");
+							//freshIframe();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return true;
+}
+
+//显示后加工后附加XY值
+function showCheck(the,str,com,nm){
+	if (the.checked){
+		$("#"+str).css("display","inline");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('enable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('enable');
+		}
+	}else{
+		$("#"+str).css("display","none");
+		if(com != undefined && com != ''){
+			$("#"+com).combobox('disable');
+		}
+		if(nm != undefined && nm != ''){
+			$("#"+nm).numberbox('disable');
+		}
+	}
+}
+</script>
+<style type="text/css">
+	.cont-attr{margin:0;padding:0;list-style:none;display:block;zoom:1;overflow:hidden;}
+</style>
+</head>
+<body style="background: none;">
+	<form id="form" name="form">
+		<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+		<div id="form_add_point" class="content">
+			<div class="easyui-panel" fit="true" title="自助报价"
+				style="padding: 10px; background: #F9F9F9;">
+				<div class="easyui-layout" data-options="fit:true">
+					<div data-options="region:'west',split:true"
+						style="width: 350px; padding: 10px">
+						<table style="width: 300px;" border="0"
+							cellspacing="0" cellpadding="0" class="tb">
+							<?php foreach ($attrArr as $row):?>
+							<tr>
+								<td style="height: 45px;" width="120" align="right"><?=strpos($row['a_name'],'尺寸') === false ? $row['a_name'] : $row['a_name']."(mm)"?></td>
+								<td width="80" align="center">
+										
+									<?php if(strpos($row['a_name'],'尺寸') !== false){?>
+										<?php if($row['p_type'] == 2):?>
+										<input name="length" type="text"
+									class="input_text easyui-numberbox"
+									data-options="min:0,precision:0" id="length" value="60"
+									size="5" />(长) X <input name="width" type="text"
+									class="input_text easyui-numberbox"
+									data-options="min:0,precision:0" id="width" value="30" size="5" />(宽)
+										<?php else:?>
+										<select id="<?=$row['id']?>" name="<?=$row['id']?>"
+									class="easyui-combobox" style="width: 160px; height: 30px;"
+									data-options="editable:false,valueField: 'id',textField: 's_name',panelHeight:'auto',url: '<?=U('QuotedPrice/getAttrJsonData')?>/type/<?=$row['id']?>/proId/<?=$_GET['id']?>'"></select>
+									<label><input name="isdiy" type="checkbox" id="isdiy" value="1"
+										onclick="showCheck(this,'ccxy')"><font color="#FF0000">自定义尺寸</font></label>
+									<span id="ccxy" style="display: none; margin: 5px 0 0 10px;"> <input
+										name="xx" type="text" id="xx" size="5" value="210"
+										class="inputs"> X <input name="yy" type="text" id="yy"
+										size="5" value="140" class="inputs">
+								</span>
+										<?php endif;?>
+									 <?php }else if(strpos($row['a_name'],'材料') !== false){?>
+										<select id="<?=$row['id']?>" name="<?=$row['id']?>"
+									class="easyui-combobox" style="width: 200px; height: 30px;"
+									data-options="
+													url:'<?=U('QuotedPrice/getAttrJsonData')?>/type/<?=$row['id']?>/proId/<?=$_GET['id']?>',
+													editable:false,
+													valueField:'id',
+													textField:'m_name',
+													panelHeight:'auto'">
+								</select>
+									 <?php }else if(strpos($row['a_name'],'数量') !== false){?>
+									 <input id="<?=$row['id']?>" name="<?=$row['id']?>"
+									class="input_text easyui-numberbox"
+									data-options="min:0,precision:0"
+									style="width: 160px; height: 30px;" />
+									<?php }else{?>
+									 <input id="<?=$row['id']?>" name="<?=$row['id']?>"
+									class="easyui-combobox" style="width: 160px; height: 30px;"
+									data-options="
+													url:'<?=U('QuotedPrice/getAttrJsonData')?>/type/<?=$row['id']?>/proId/<?=$_GET['id']?>',
+													editable:false,
+													valueField:'id',
+													textField:'a_name',
+													panelHeight:'auto'" />
+									<?php }?>
+        						</td>
+							</tr>
+							<?php endforeach;?>
+					</table>
+					</div>
+					<div data-options="region:'center'" style="padding: 10px">
+						<table style="width: 300px;" border="0" cellspacing="0"
+							cellpadding="0" class="tb">
+							<?php foreach ($proArr as $row):?>
+							<tr>
+								<td width="80" align="left">
+										<?php
+								$type = "";
+								$name = "";
+								$clic = 'onclick="showCheck(this';
+								$must = "";
+								$size = "";
+								$type = $row ['combo_name'] != "" ? "radio" : "checkbox";
+								$name = $row ['combo_name'] != "" ? $row ['combo_name'] : $row ['id'];
+								$clic .= $row ['sizeDIY'] == 1 ? ",'diy_" . $row ['id'] . "'" : ",''";
+								$clic .= $row ['pp_process_attr'] != "" ? ",'attr_" . $row ['id'] . "'" : ",''";
+								$clic .= $row ['numDIY'] == 1 ? ",'nm_" . $row ['id'] . "'" : ",''";
+								$clic .= ')"';
+								$must = $row ['ismust'] == 1 ? "checked disabled" : "";
+								?>
+										<label> <!-- combo_name, sizeDIY, numDIY, ismust, --> <input
+										type="<?=$type?>" name="<?=$name?>" <?=$clic?>
+										id="<?=$row['id']?>" value="<?=$row['id']?>" />
+										<?=$row['p_name'];?></label>
+									 <?php if($row['sizeDIY'] == 1){?>
+										<span id="diy_<?=$row['id']?>" style="display: none;"> <input
+										name="<?=$row['id']?>_x" type="text" id="uvx" size="4"
+										class="input_text easyui-numberbox"
+										data-options="min:0,precision:0" /> × <input
+										name="<?=$row['id']?>_y" type="text" id="uvy" size="4"
+										class="input_text easyui-numberbox"
+										data-options="min:0,precision:0" /> mm
+								</span>
+										<?php }?>
+									 <?php if($row['pp_process_attr'] != ""){?>
+										<input type="text" id="attr_<?=$row['id']?>"
+									name="<?=$row['id']?>" class="easyui-combobox"
+									style="width: 120px; display: none;"
+									data-options="url:'<?=U('QuotedPrice/getProJsonData')?>/type/<?=$row['id']?>/proId/<?=$_GET['id']?>',valueField:'id',textField:'p_name',panelHeight:'auto',disabled:true" />
+									 <?php }?>
+									 <?php if($row['numDIY'] == 1){?><input id="nm_<?=$row['id']?>"
+									name="<?=$row['id']?>" class="input_text easyui-numberbox"
+									data-options="min:0,precision:0" style="width: 160px;" />
+									<?php }?>
+									</td>
+							</tr>
+							<?php endforeach;?>
+					</table>
+					</div>
+				</div>
+			</div>
+			<div class="page-contain">
+				<table width="100%">
+					<tr>
+						<td align="center">&nbsp;</td>
+						<td align="right" width="150"><a href="javascript:void(0);"
+							onclick="javascript:submitForm();" plain="true"
+							iconCls="icon-add" class="easyui-linkbutton">自助报价</a></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</form>
+</body>
+</html>

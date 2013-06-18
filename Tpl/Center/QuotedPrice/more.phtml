@@ -1,0 +1,185 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+});
+</script>
+<style type="text/css">
+html {
+	background: #fff;
+}
+
+.cont-attr {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+}
+
+.cont-attr li {
+	line-height: 30px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	
+}
+
+.cont-attr .attr p {
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .attr p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .attr p .input {
+	font-weight: 800;
+	font-size: 14px;
+	line-height: 30px;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process {
+	width: 48%;
+	float: left;
+}
+
+.cont-attr .process p {
+	margin: 0 3px 3px 0;
+	border-bottom: 1px solid #dedede;
+	overflow: hidden;
+}
+
+.cont-attr .process p .input {
+	font-size: 14px;
+	font-weight: 700;
+	margin: 0 0 0 5px;
+	text-align: left;
+	float: left;
+}
+
+.cont-attr .process p .label {
+	font-size: 14px;
+	background-color: transparent;
+	margin: 0 0 0 15px;
+	line-height: 30px;
+	width: 100px;
+	text-align: left;
+	float: left;
+}
+</style>
+</head>
+<body style="background: none;">
+	<div class="bgloader"></div>
+	<div id="form_add_point" class="content">
+		<div class="easyui-panel" title=""
+			style="padding: 10px; overflow: hidden;">
+			<ul class="cont-attr">
+				<li class="process">
+					<p>
+						<span class="label">纸张</span> <span class="input"><?=$rs['paperType']." ".$rs['paperSize']?></span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">开数</span> <span class="input"><?=$rs['kaishuNum']?></span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">放张数</span> <span class="input"><?=$rs['lossPaper']?></span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">全张纸数</span> <span class="input"><?=$rs['paperAmount']?></span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">印工数</span> <span class="input"><?=$rs['printWorks']?></span>
+					</p>
+				</li>
+			</ul>
+			<ul class="cont-attr">
+				<li class="attr">
+					<p>
+						<span class="label">所选印刷机</span> <span class="input"><?=$rs['printerInfo']?></span>
+					</p>
+				</li>
+			</ul>
+		</div>
+		<div class="cleaner_h10"></div>
+		<div class="easyui-panel" title=""
+			style="padding: 10px; overflow: hidden;">
+			<ul class="cont-attr">
+				<li class="process">
+					<p>
+						<span class="label">纸价</span> <span class="input">￥ <?=$rs['paperPrice']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">后加工费用</span> <span class="input">￥ <?=$rs['processFee']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">印工费</span> <span class="input">￥ <?=$rs['workFee']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">版费</span> <span class="input">￥ <?=$rs['versionCost']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">数量比例差价</span> <span class="input">￥ <?=$rs['numberProfit']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">会员组利润差价</span> <span class="input">￥ <?=$rs['groupProfit']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">印刷费</span> <span class="input"><?=$rs['workFee']?> +  <?=$rs['versionCost']?> = <?=$rs['printFee']?> 元</span>
+					</p>
+				</li>
+				<li class="process">
+					<p>
+						<span class="label">不计利润费用</span> <span class="input">￥ <?=$rs['priceFinal']?> 元</span>
+					</p>
+				</li>
+			</ul>
+			<ul class="cont-attr">
+				<li class="attr">
+					<p>
+						<span class="label" style="font-weight: 700;">最终报价</span>
+						<span class="input" style="font-size: 15px; color: #ff0000;">
+						<?=$rs['paperPrice']?> + <?=$rs['processFee']?> + <?=$rs['printFee']?> + <?=$rs['groupProfit']?> + <?=$rs['groupProfit']?> =
+						<?=$rs['priceFinal']?> 
+							
+						元</span>
+					</p>
+				</li>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

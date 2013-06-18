@@ -1,0 +1,99 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	//$("#dstart").datepicker();
+	//$("#dend").datepicker();
+});
+function show(id,type){
+	new Maya.Box({
+		text : "对应操作记录",
+		url : "<?=U ( "Report/showInfo" )?>/id/"+id+"/type/"+type,
+		win : parent,
+		width : 700,
+		height : 220,
+		btns : [
+    		{
+				text     : "    确定    ",
+				isCancel : true	
+			}
+		]
+	});
+}
+
+</script>
+
+<div class="content">
+	<div class="tag">筛选</div>
+	<div class="tagc">
+		<form id="form" method="get">
+			<input type="hidden" name="s" id="s"
+				value="/<?=MODULE_NAME?>/<?=ACTION_NAME?>/" />
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100" height="30" align="right"><strong>日期范围：</strong></td>
+					<td><input id="dstart" type="text" class="input_text easyui-datebox"
+							name="dstart" value="<?=$_GET['dstart'] == "" ? date ( "Y-m-d", strtotime ( "-30 day" ) ) : $_GET['dstart']?>" /> — <input id="dend"
+							class="input_text easyui-datebox" type="text" name="dend"
+							value="<?=$_GET['dend'] == "" ? date ( "Y-m-d") : $_GET['dend']?>" />&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton"
+						onclick="javascript:$('#form').submit();" iconCls="icon-search">搜索</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div class="tag">资金变动记录</div>
+	<div class="tagc" style="margin-bottom: 0; padding: 1px;">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"
+			class="tb tblGrid">
+			<thead>
+				<tr bgcolor="#CCCCCC">
+					<!-- 会员号 用户名 所在组 公司名称 地区 联系人 QQ 登录/报价  -->
+					<th width="30" align="center"></th>
+					<th align="left" width="100"><strong>会员名称</strong></th>
+					<th align="center" width="150"><strong>变动说明</strong></th>
+					<th align="center" width="120"><strong>交易日期</strong></th>
+					<th align="left" width="80"><strong>收入金额</strong></th>
+					<th align="left" width="80"><strong>支出金额</strong></th>
+					<th align="left" width="80"><strong>结后余额</strong></th>
+					<th width="130" align="center"><strong>操作</strong></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			$i = 0;
+			foreach ( $recordArr as $row ) :
+				$i ++;
+				?>
+				<tr>
+					<td align="center"><?=$i?></td>
+					<td align="left"><?= $row['u_name'] ?></td>
+					<td align="left"><?= $row['r_desc'] ?></td>
+					<td align="center"><?= $row['r_date'] ?></td>
+					<td align="left"><font color="#45AF6C"><?= $row['r_income'] ?></font></td>
+					<td align="left"><font color="#ff0000"><?= $row['r_pay'] ?></font></td>
+					<td align="left"><?= $row['r_overage'] ?></td>
+					<td align="center"><a href="#" onclick="show(<?=$row['id']?>,<?=$row['r_type']?>)"
+						class="easyui-linkbutton" plain="true" iconCls="icon-search">对应记录</a>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+        </tbody>
+		</table>
+		<!-- 分页文字 -->
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="center" width="200">
+						<!-- <input type="submit"
+						class="maya_btn export_btn" value="导出Excel" /> <input
+						type="submit" class="maya_btn import_btn" value="导入Excel" /> -->
+					</td>
+					<td align="right"><?=$page->printCount();$page->pageNormal();$page->printDropMenu();?></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

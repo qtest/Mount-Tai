@@ -1,0 +1,192 @@
+<include file="Include:header" /> <script language="javascript">
+$(document).ready(function(){
+	//$(".chosen").chosen();
+});
+function checkGroup(id){
+	var title = "修改";
+	var type = "edit";
+	if(id == undefined){
+		title = "添加";
+		type = "add";
+	}
+	new Maya.Box({
+		text : title + "用户组",
+		url : "<?=U ( "Manager/checkGroup" )?>/id/"+id+"/type/"+type,
+		win : parent,
+		width : 500,
+		height : 220,
+		btns : [
+    		{
+				text : "    确定    ",
+				onClick : function(w){
+					w.getIframe().submitForm(w);
+					// _self.close();
+				}	
+			},
+			{
+				text : "    取消    ",
+				onClick : function(w){
+    				w.close();
+				}	
+			}
+		]
+	});
+}
+
+function  delGroup(id){
+	new Maya.Box({
+		text : "删除记录",
+		chtml : "确定要删除该会员组吗？",
+		win : parent,
+		isAlert : true,
+		iframeAuto : false,
+		overlayAlpha : .5,
+		iframeScroll : "auto",
+		inlineAuto : false,
+		type : "inline",
+		btns : [
+			{
+				text : "确定"	,
+				onClick : function(w){
+					$.get(
+							"<?=U ( "Manager/checkGroup" )?>",
+							{id:id,type:'del'},
+							function(data){
+								if(data.status=="1"){
+									top.Maya.Msg({
+										type : "success",
+										msg : data.info,
+										call : function(){
+											w.close();
+											freshIframe();
+										}	
+									});	
+								}else{
+									top.Maya.Msg(data.info);	
+								}
+							},
+							"json"
+						);
+  	       		 }
+			},
+			{
+				text : "取消"	,
+				isCancel : true
+			}
+		]
+	});	
+}
+function profit(id){
+	new Maya.Box({
+		text : "利润值设置",
+		url : "<?=U ( "Manager/profit" )?>/id/"+id,
+		win : parent,
+		width : 650,
+		height : 220,
+		btns : [
+    		{
+				text : "    确定    ",
+				onClick : function(w){
+					w.getIframe().submitForm(w);
+					// _self.close();
+				}	
+			},
+			{
+				text : "    取消    ",
+				onClick : function(w){
+    				w.close();
+				}	
+			}
+		]
+	});
+}
+
+</script>
+
+<div class="content">
+	<div class="tag">筛选</div>
+	<div class="tagc">
+		<form id="form" method="get">
+			<input type="hidden" name="s" id="s"
+				value="Center/<?=MODULE_NAME?>/<?=ACTION_NAME?>/" />
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100" height="30" align="right"><strong>会员组名称：</strong></td>
+					<td>
+					<select class="chosen" title="sel" name="name"
+						id="name" style="width: 200px;">
+							<option value="">不限</option>
+							<?php foreach ($ug_select as $key): ?>
+								<option value="<?= $key['id'] ?>"
+								<?php if($_GET['name'] == $key['id']){echo 'selected="selected"';}?>><?= $key['g_name'] ?></option>
+							<?php endforeach; ?>
+						</select>&nbsp;&nbsp; <a href="#" class="easyui-linkbutton"  onclick="javascript:$('#form').submit();"
+						iconCls="icon-search">搜索</a>
+							<a href="#" class="easyui-linkbutton"
+							iconCls="icon-add" onclick="checkGroup()">添加自定义组</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div class="tag">会员列表</div>
+	<div class="tagc" style="margin-bottom: 0; padding: 1px;">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0"
+			class="tb tblGrid">
+			<thead>
+				<tr bgcolor="#CCCCCC">
+				<!-- 会员号 用户名 所在组 公司名称 地区 联系人 QQ 登录/报价  -->
+					<th width="30" align="center"></th>
+					<th align="left" width="150"><strong>会员组名称</strong></th>
+					<th align="center" width="80"><strong>会员数</strong></th>
+					<!-- <th align="center" width="40"><strong>默认组</strong></th>
+					<th align="center" width="150"><strong>说明</strong></th> -->
+					<th align="center" width="30"><strong>状态</strong></th>
+					<th align="center" width="100"><strong>备注</strong></th>
+					<th width="130" align="center"><strong>操作</strong></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+			$i = 0;
+			foreach ( $ugroup as $row ) :
+				$i ++;
+				$bg = $i % 2 == 0 ? 'bgcolor="#FAFAFA"' : "";
+				?>
+				<tr>
+					<td align="center"><?=$i?></td>
+					<td align="left"><?= $row['g_name'] ?></td>
+					<td align="left"><?= $row['total'] ?></td>
+					<!-- <td align="center"><?= $row['g_default'] == 1 ? "<span style='color:blue;'>√</span>" : "" ?></td>
+					<td align="left"><?=$row['g_shuoming'] ?></td> -->
+					<td align="left"><?= $row['g_status'] == 1 ? "<span style='color:blue;'>启用</span>" : "<span style='color:red;'>停用</span>" ?></td>
+					<td align="left"><?= $row['g_desc'] ?></td>
+					<td align="center">
+						<a href="#" title="利润值" onclick="profit(<?=$row['id']?>)"
+						class="easyui-linkbutton" plain="true" iconCls="icon-log"></a>
+						<a href="#" onclick="checkGroup(<?=$row['id']?>)" title="修改"
+						class="easyui-linkbutton" plain="true" iconCls="icon-edit"></a>
+						<a href="#" title="删除" onclick="delGroup(<?=$row['id']?>)"
+						class="easyui-linkbutton" plain="true" iconCls="icon-cancel"></a>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+        </tbody>
+		</table>
+		<!-- 分页文字 -->
+		<div class="page-contain">
+			<table width="100%">
+				<tr>
+					<td align="center" width="200">
+						<!-- <input type="submit"
+						class="maya_btn export_btn" value="导出Excel" /> <input
+						type="submit" class="maya_btn import_btn" value="导入Excel" /> -->
+					</td>
+					<td align="right"><?=$page->printCount();$page->pageNormal();$page->printDropMenu();?></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

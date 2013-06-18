@@ -1,0 +1,319 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('.bgloader').fadeOut(500);
+	//initDataGrid("tbl1","待送货订单","<?=U('InvoiceManager/allProdecedOrder4Select')?>","#dbTool1");
+	initDataGrid("tbl1","待送货订单","","#dbTool1");
+	initDataGrid("tbl2","已选订单","","#dbTool2");
+	$("#form").on("submit",function(){
+    	var idStr = getSelData();
+    	if(idStr == ""){
+			return false;
+        }
+    	var uName = $('#uName').val();
+        //console.info(idStr);return false;
+    	$.post(
+			"<?=U('InvoiceManager/makeDeliveryLabel')?>",
+			{uName:uName,idStr:idStr},
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+							topView(data.data);
+						}
+					});			
+				}else{
+					Maya.Msg({
+                       type : data.data,
+                       msg : data.info
+               		});
+				}
+			},
+			"json"
+		);
+		return false;
+	});
+	
+})
+
+function getSelData(){
+	var data = $('#tbl2').datagrid('getData');
+    var rows = data.rows;
+	if(rows.length < 1){
+		Maya.Msg("请选择待送货订单。");
+		return "";
+    }
+    var idStr = "";
+	for(var i=0; i < rows.length; i++){
+		///console.info(rows[i].item_list_id + "  " + rows[i].cusNum);
+		idStr += idStr == "" ? rows[i]['order_id'] : ","+rows[i]['order_id'];
+    }
+    return idStr;
+}
+
+function topView(id,type){
+	var uName = 0;
+	var btns = [{text : "    确定    ",onClick : function(w){w.close();}}];
+	if(id == 0){
+		id = getSelData();
+		if(id == ""){
+			return;
+	    }
+		uName = $('#uName').val();
+	}else{
+		btns = [{text : "    打印    ",onClick : function(w){w.getIframe().submitForm(w);}},{text : "    确定    ",onClick : function(w){w.close();}}];
+	}
+    if(type == undefined)type="show";
+	new Maya.Box({
+		text : "送货单查看",
+		url : "<?=U ( "InvoiceManager/showDeliveryOrder" )?>/id/"+id+"/type/"+type+"/uid/"+uName,
+		win : parent,
+		width : 800,
+		height : 220,
+		btns : btns
+	});
+}
+
+function filterData(){
+	var uName = $('#uName').val();
+	if(uName == ""){
+		Maya.Msg("请选择客户");
+		return;
+	}
+	var dstart = $('#dstart').datebox('getValue');
+	var dend   = $('#dend').datebox('getValue');
+	var product = $('#product').val();
+	$.post(
+			"<?=U('InvoiceManager/allProdecedOrder4Select')?>",
+			{
+				product:product,
+				uName:uName,
+				dstart:dstart,
+				dend:dend,
+				page:oPage.pageIndex,
+				rows:oPage.pageSize
+			},
+			function(data){
+					$('#tbl1').datagrid('getPager').pagination({
+						onSelectPage : function(pPageIndex, pPageSize) {
+							//改变oPage的参数值，用于下次查询传给数据层查询指定页码的数据
+							oPage.pageIndex = pPageIndex;
+							oPage.pageSize = pPageSize;
+							$.post(
+									"<?=U('InvoiceManager/allProdecedOrder4Select')?>",
+									{
+										product:product,
+										uName:uName,
+										dstart:dstart,
+										dend:dend,
+										page:oPage.pageIndex,
+										rows:oPage.pageSize
+									},
+									function(data){
+										$("#tbl1").datagrid("loadData",data);
+									},'json'
+							);
+							//异步获取数据到javascript对象，入参为查询条件和页码信息
+							//var oData = getAjaxDate("orderManageBuz","qryWorkOrderPaged",queryCondition,oPage);
+							//使用loadDate方法加载Dao层返回的数据
+							//$('#tt').datagrid('loadData',{"total":oData.page.recordCount,"rows":oData.data});
+							
+						}
+					});
+					$("#tbl2").datagrid("loadData",[]);
+					$("#tbl1").datagrid("loadData",data);
+			},
+			"json"
+		);
+	return false;
+}
+/**
+ * 获取选中的行
+ */
+function getSelected(num){
+	var selected = $('#tbl').datagrid('getSelections');
+	//console.info(selected);
+	if(selected.length == 0){
+		Maya.Msg("请选择操作项【单击行即可】");
+		return "";
+	}
+	if(selected.length > num){
+		Maya.Msg("所选数量超出操作限制。");
+		return "";
+	}
+	var id = "";
+	for(var i = 0 ; i < selected.length;i++){
+		id += selected[i].id;
+		id += i+1 == selected.length ? "" : ","
+	}
+	return id;
+}
+function show(type){
+	var selected = $('#tbl1').datagrid('getSelections');
+	//var sel = selectOrder();
+	if(selected.length == 0)return;
+	var id = selected[0].order_id;
+	//console.info(id);
+	new Maya.Box({
+		text : type == "order" ? "订单详细信息" : "加工单详细信息",
+		url : type == "order" ? "<?=U ( "InvoiceManager/showOrder" )?>/id/"+id : "<?=U ( "InvoiceManager/getLabel" )?>/id/"+id,
+		win : parent,
+		width : 800,
+		height : 220,
+		btns : [
+	    	{
+				text : "    打印    ",
+				onClick : function(w){
+					w.getIframe().print();
+				}	
+			},
+    		{
+				text : "    确定    ",
+				isCancel : true	
+			}
+		]
+	});
+}
+
+/**
+ * 物资在两个表格中移动
+ * oid 提供数据表格id
+ * nid 接收数据表格id
+ */
+function moveData(oid,nid){
+	var odg = $('#'+oid); 
+	var odArr = odg.datagrid('getData'); 
+    //var rows = odg.datagrid('getSelections');
+    var selected = odg.datagrid('getSelections');
+    var ndg = $('#'+nid);
+    var ndArr = ndg.datagrid('getData');
+    if(selected.length == 0){
+		Maya.Msg("请选择待送货订单。");
+		return;
+  	}
+    function add(){
+        var res = false;
+        for(var i = 0; i < selected.length; i++){
+        var row = selected[i];
+        //遍历原数组，将元素删除
+		for(var a = 0; a < odArr.total; a++){
+			if(odArr.rows[a].id == row.id){
+				odArr.total -= 1;
+				odArr.rows.splice(a,1);
+			}
+        }
+        for(var b = 0; b < ndArr.total; b++){
+            //是否已经存在
+			if(ndArr.rows[b].id == row.id){
+				res = true;
+			}
+		}
+		if(!res){
+			//不存在
+			ndArr.total += 1;  
+			ndArr.rows.push(row);
+		}
+        }   
+    }
+    add();
+    odg.datagrid('clearSelections');
+    ndg.datagrid('clearSelections');
+    odg.datagrid('loadData', odArr);
+    ndg.datagrid('loadData', ndArr);
+}
+//-->
+</script>
+<div id="dbTool1">
+	<a href="#" id="btnedit" class="easyui-linkbutton" iconCls="icon-log" plain="true" onclick="show('wer')">加工单详细</a>
+	<a href="#" id="btnedit" class="easyui-linkbutton" iconCls="icon-log" plain="true" onclick="show('order')">订单详细</a>
+	<a href="#" id="btnAdd" class="easyui-linkbutton" iconCls="icon-go" plain="true" onclick="moveData('tbl1','tbl2')">添加</a>
+	<a href="#" id="btnUnSelAll1" class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="$('#tbl1').datagrid('clearSelections')">取消选中</a>
+</div>
+<div id="dbTool2">
+	<a href="#" id="btnDel" class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="moveData('tbl2','tbl1')">移除</a>
+	<a href="#" id="btnUnSelAll2" class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="$('#tbl2').datagrid('clearSelections')">取消选中</a>
+</div>
+<div class="content">
+	<form action="" method="post" id="form" name="form">
+		<div class="tagc" style="overflow: hidden; border: 1px solid #CCC; margin: 0;">
+			<div class="tag">加工单查询</div>
+			<div class="tagc" style="overflow: hidden; border: 1px solid #CCC;">
+				<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td height="30" align="right"><strong>日期范围：</strong></td>
+					<td colspan="3">
+						<input id="dstart" style="width: 130px;" type="text" class="easyui-datebox" name="dstart" value="<?=date ( "Y-m-d", strtotime ( "-30 day" ) )?>" />
+						— <input id="dend" style="width: 130px;" class="easyui-datebox" type="text" name="dend" value="<?=date ( "Y-m-d")?>" />
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td width="100" height="30" align="right"><strong>客户单位：</strong></td>
+					<td width="120" align="right">
+						<select id="uName" name="uName" class="input_text" style="width:140px;">
+							<option value="">请选择</option>
+							<?php foreach ($Uarr as $rs):?>
+							<option value="<?=$rs['id']?>"><?=$rs['u_company']?></option>
+							<?php endforeach;?>
+						</select>
+					</td>
+					<td width="80" height="30" align="right"><strong>项目：</strong></td>
+					<td width="100" align="right">
+						<select id="product" name="product" class="input_text" style="width:140px;">
+							<option value="">不限</option>
+							<?php foreach ($Parr as $rs):?>
+							<option value="<?=$rs['id']?>"><?=$rs['p_name']?></option>
+							<?php endforeach;?>
+						</select>
+					</td>
+					<td width="100" align="right">
+						<a href="#" class="easyui-linkbutton" onclick="javascript:filterData();" iconCls="icon-search">搜索</a>
+					</td>
+				</tr>
+			</table>
+			</div>
+			<div style="clear: both; overflow: hidden;">
+				<div style="width: 49%; float: left;">
+					<table id="tbl1">
+						<thead>
+							<tr>
+								<!-- <th data-options="field:'ck',checkbox:true"></th> -->
+								<th field="userInfo" width="120" align="center"><strong>客户</strong></th>
+								<th field="end_date" width="100" align="center"><strong>加工完成</strong></th>
+								<th field="p_name" width="100" align="left"><strong>项目名称</strong></th>
+								<th field="o_amount" width="80" align="center"><strong>数量</strong></th>
+								<th field="o_price" width="60" align="center"><strong>金额</strong></th>
+								<th field="o_date" align="left" width="100"><strong>订单日期</strong></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div style="width: 50%; float: right;">
+					<table id="tbl2"
+						data-options="singleSelect:true">
+						<thead>
+							<tr>
+								<!-- <th data-options="field:'ck',checkbox:true"></th> -->
+								<th field="userInfo" width="120" align="center"><strong>客户</strong></th>
+								<th field="end_date" width="100" align="center"><strong>加工完成</strong></th>
+								<th field="p_name" width="100" align="left"><strong>项目名称</strong></th>
+								<th field="o_amount" width="80" align="center"><strong>数量</strong></th>
+								<th field="o_price" width="60" align="center"><strong>金额</strong></th>
+								<th field="o_date" align="left" width="100"><strong>订单日期</strong></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="page-contain" style="text-align: center; clear: both;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-print" onclick="topView(0,'view')">预览</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="$('#form').submit();">生成送货单</a>
+		</div>
+	</form>
+</div>
+</body>
+</html>

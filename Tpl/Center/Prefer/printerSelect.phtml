@@ -1,0 +1,87 @@
+<include file="Include:header" />
+<script language="javascript">
+var oPage = {pageIndex:1,pageSize:10};
+$(document).ready(function(){
+	initDataGrid("tbl","印刷机列表","<?=U('Machine/getAllMC4Json')?>","");
+});
+
+function getSelected(){
+	var selected = $('#tbl').datagrid('getSelections');
+	//console.info(selected[0].name);
+	if(selected.length == 0){
+		parent.Maya.Msg("请选择操作项【单击行即可】");
+		return "";
+	}
+	var id = "";
+	for(var i = 0 ; i < selected.length;i++){
+		id += selected[i].id;
+		id += i+1 == selected.length ? "" : ","
+	}
+	return id;
+}
+
+function submitForm(){
+	//var data = new Array();
+	var data = $("#form").formSerialize()
+	//var ss = getSelected();
+	//data.push({idStr:ss});
+	//data.idStr = getSelected();
+	data = data + '&idStr=' + getSelected();
+	//console.info(data);return;
+	$.post(
+			"<?=U(MODULE_NAME.'/updataPinter')?>",
+			data,
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : "操作成功",
+						call : function(){
+							location.reload();	
+							//w.close();
+							//console.info("1111");
+							//freshIframe();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return true;
+}
+
+function formatStatus(val,row){
+	if (val == 0){  
+        return '<a href="#" title="停用" iconCls="icon-no" plain="true"><img src="__PUBLIC__/images/icons/cross_circle.png" /></a>';  //
+    } else {  
+        return '<a href="#" title="启用" iconCls="icon-no" plain="true"><img src="__PUBLIC__/images/icons/tick_circle.png" /></a>';    
+    }  
+}
+</script>
+</head>
+<body>
+	<form id="form" name="form">
+		<input type="hidden" id="type" name="type" value="add" />
+		<input type="hidden" id="id" name="id" value="<?=$_GET['id']?>" />
+		<div class="content" style="height: 300px;">
+			<table id="tbl">
+				<thead>
+					<tr>
+						<th field="m_type" width="80" align="left"><strong>类型</strong></th>
+						<th field="m_name" width="150" align="center"><strong>机器名</strong></th>
+						<th field="m_color" width="80" align="center"><strong>颜色</strong></th>
+						<th field="m_maxLength" width="80" align="center"><strong>最大印刷尺寸</strong></th>
+						<th field="m_maxThick" width="80" align="center"><strong>印刷厚度</strong></th>
+						<th field="m_price" width="60" align="center"><strong>开机费</strong></th>
+						<th field="m_status" width="40" align="center"
+							formatter="formatStatus"><strong>状态</strong></th>
+						<th field="m_desc" width="150" align="left"><strong>备注</strong></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</form>
+</body>
+</html>

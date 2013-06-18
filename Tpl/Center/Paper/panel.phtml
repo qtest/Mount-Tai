@@ -1,0 +1,108 @@
+<include file="Include:header" />
+<style type="text/css">
+html {
+	background: #fff;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+	$('.price').numberbox({min:0,precision:2});
+	<?php if(isset($rs)):?>
+		editStatus();
+	<?php endif;?>
+});
+function editStatus(){
+	$("#m_name").attr("value","<?=$rs['m_name']?>");
+	$("input[name='m_status'][value=<?=$rs['m_status']?>]").attr("checked",true); 
+	//$("#m_price").attr("value","<?=$rs['m_price']?>");
+	//$("#m_dPrice").attr("value","<?=$rs['m_dPrice']?>");
+	$("#m_status").attr("value","<?=$rs['m_status']?>");
+	$("#m_unit").attr("value","<?=$rs['m_unit']?>");
+	$("#m_desc").attr("value","<?=$rs['m_desc']?>");
+}
+
+function submitForm(w){
+	if($("#m_name").val()==""){
+		Maya.Msg("<strong>纸名称</strong> 不能为空");
+		return false;
+	}
+	$.post(
+			"<?=U(MODULE_NAME.'/'.ACTION_NAME)?>",
+			$("#form").formSerialize(),
+			function(data){
+				if(data.status=="1"){
+					Maya.Msg({
+						type : "success",
+						msg : data.info,
+						call : function(){
+								
+							w.close();
+							freshIframe();
+							//console.info("1111");
+							//top.frames['centerIframe'].location.reload();
+							//parent.$('#centerIframe').location.reload();
+						}	
+					});
+				}else{
+					Maya.Msg(data.info);	
+				}
+			},
+			"json"
+		);
+	return;
+}
+</script>
+</head>
+<body>
+	<div>
+		<form id="form" name="form">
+			<input type="hidden" name="type" id="type" value="<?=$_GET['type']?>" />
+			<input type="hidden" name="id" id="id" value="<?=$_GET['id']?>" />
+			<!-- <input type="hidden" name="type_id" id="type_id" value="<?=$type_id?>" /> -->
+			<div class="p10">
+				<table border="0" cellpadding="0" cellspacing="0"
+					style="margin: 5px;">
+					<tr>
+						<td width="100" height="30" align="right">纸名称：</td>
+						<td colspan="3"><input type="text" name="m_name" id="m_name"
+							class="input_text" style="width: 95%;" /></td>
+					</tr>
+					<tr>
+						<td height="30" align="right">类型：</td>
+						<td><select name="type_id" id="type_id" style="width: 120px;">
+                          <?php foreach($typeArr as $value):?>
+                            <option value="<?=$value['id']?>"><?=$value['t_name']?></option>
+                          <?php endforeach;?>
+                          </select></td>
+						<td width="100" align="right">计量单位：</td>
+						<td><input type="text" name="m_unit" id="m_unit"
+							class="input_text" value="吨" /></td>
+					</tr>
+					<tr>
+						<td height="30" align="right">正度单价：</td>
+						<td><input type="text" name="m_price" id="m_price"
+							class="input_text price" value="<?=$rs['m_price']?>" /> 元</td>
+						<td height="30" width="100" align="right">大度单价：</td>
+						<td><input type="text" name="m_dPrice" id="m_dPrice"
+							class="input_text price" value="<?=$rs['m_dPrice']?>" /> 元</td>
+					</tr>
+					<tr>
+						<td height="35" width="100" align="right">状态：</td>
+						<td><label style="color: #438787;"><input name="m_status" id="zb"
+								type="radio" value="1" checked="checked" /> 启用</label> <label
+							style="color: #ff0000;"><input name="m_status" id="bz"
+								type="radio" value="0" /> 停用</label></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td height="45" align="right">备注：</td>
+						<td colspan="3"><textarea id="m_desc" name="m_desc"
+								class="input_text" style="width: 95%; height: 40px;"></textarea></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

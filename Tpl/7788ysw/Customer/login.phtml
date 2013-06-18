@@ -1,0 +1,163 @@
+<include file="Include:header" />
+<script>
+$(function(){
+	//按钮提交
+    Maya.BindEvent(_("login_btn"),"click",function(){
+    	submitForm();	
+	});
+    //回车提交
+    Maya.BindEvent(document.body,"keydown",function(e){
+            //如果是回车键
+            var e=event || e;
+            if(e.keyCode==13){
+            	submitForm();	
+            }
+    });
+})
+function submitForm(){
+	  Maya.Msg({
+		    msg : "正在登录中，请稍后....",
+		    sec : 5
+	  });
+        $.post(
+                "<?=U("Customer/loginCheck")?>",
+                $("#loginForm").formSerialize(),
+                function(data){
+                        if(data.status == 1){
+                                Maya.Msg({
+                                        type : "success",
+                                        msg : data.info,
+                                        sec : 1.5,
+                                        call : function(){
+                                            top.location="<?=U("Index/index")?>";
+                                        }
+                                });
+                        }else{
+                                Maya.Msg({
+                                        type : "fail",
+                                        msg : data.info
+                                });
+                        }
+                },
+                "json"
+        );
+}
+</script>
+<style type="text/css">
+.login_input {
+	font-family: "微软雅黑";
+	font-size: 14px;
+	line-height: 37px;
+	border: 1px solid #999;
+	-webkit-transition: box-shadow 0.3s linear;
+	-moz-transition: box-shadow 0.3s linear;
+	-ms-transition: box-shadow 0.3s linear;
+	-o-transition: box-shadow 0.3s linear;
+	transition: box-shadow 0.3s linear;
+	height: 37px;
+	width: 190px;
+	padding-left: 10px;
+	display: inline-block;
+	box-shadow: inset 0px 0px 8px 1px rgba(0, 0, 0, .1);
+	color: #999;
+}
+
+.cont-attr {
+	margin: 0;
+	width: 350px;
+	padding: 0;
+	list-style: none;
+	display: block;
+	zoom: 1;
+	overflow: hidden;
+	padding: 0;
+}
+
+.cont-attr li {
+	overflow: hidden;
+	text-align: center;
+}
+
+.cont-attr .attr {
+	border-bottom: none;
+	height: 45px;
+	width: 300px;
+}
+
+.cont-attr .attr p {
+	overflow: hidden;
+}
+
+.cont-attr .attr .label {
+	padding: 0 15px 0 0;
+	line-height: 45px;
+	background-color: transparent;
+	margin: 0 0 0 5px;
+	width: 60px;
+	text-align: right;
+	float: left;
+}
+
+.cont-attr .attr .input {
+	margin: 0 0 0 5px;
+	text-align: left;
+	line-height: 45px;
+}
+</style>
+<include file="Include:toper" />
+<div class="navigator"
+	style="margin: 0 auto; padding-top: 20px; *zoom: 1; position: relative;">
+	<!-- <div class="main_panel"
+		style="width: 320px; position: absolute; right: 0; top: 20px; clear: both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<ul>
+					<li>
+						<div>
+							<a
+								href="<?=U('QuotedPrice/index').'/type/'.$row['p_type'].'/id/'.$row['id']?>"><span
+								class="icon"></span><?=$row['p_name']?>自助报价</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>margin-right: 340px;  -->
+	<div class="main_panel" style="clear: both;">
+		<div class="accordion-body">
+			<div class="accordion-inner">
+				<div
+					style="margin: 20px 0; border-bottom: 1px solid #dedede; font-size: 25px; text-align: center; padding: 0 260px 5px 0;">
+					用户登录</div>
+				<form id="loginForm">
+					<ul class="cont-attr" style="margin: 0 auto;">
+						<li class="attr">
+							<p>
+								<span class="label">用户名：</span> <span class="input"> <input
+									name="login_name" type="text" class="login_input"
+									id="login_name" value="<?=$uid?>" />
+								</span>
+							</p>
+						</li>
+						<li class="attr">
+							<p>
+								<span class="label">密 码：</span> <span class="input"> <input
+									name="login_pwd" type="password" class="login_input"
+									id="login_pwd" value="" />
+								</span>
+							</p>
+						</li>
+					</ul>
+					<div class="clear"></div>
+					<div style="text-align: center; padding: 20px 0 20px 50px;">
+						<!--  --><label><input {$check} name="isremember" type="checkbox"
+							id="isremember" value="true"> 记住我的帐号</label>
+						<a href="#" id="login_btn" name="login_btn" class="button"
+							style="width: 120px; letter-spacing: 10px; font-size: 16px; padding: 8px 0;">登录</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<include file="Include:footer" />

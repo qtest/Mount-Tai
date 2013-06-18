@@ -1,0 +1,266 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('#btnedit').linkbutton('disable');
+	$('#btndel').linkbutton('disable');	
+	$('#btnUnsel').linkbutton('disable');
+	initDataGrid("tbl","我的订单列表","<?=U('InvoiceManager/getDeliveryListJson')?>","#dbTool");
+	$('#choseStatus').change(function(){
+		//console.info($(this));
+		if($(this)[0].checked == true){
+			filterData('sel');
+		}else{
+			filterData('');
+		}
+	});
+});
+function filterData(type){
+	var uName = $('#uName').val();
+	var dstart = $('#dstart').datebox('getValue');
+	var dend   = $('#dend').datebox('getValue');
+	$.post(
+			"<?=U('InvoiceManager/getDeliveryListJson')?>",
+			{
+				uName:uName,
+				dstart:dstart,
+				dend:dend,
+				type:type,
+				page:oPage.pageIndex,
+				rows:oPage.pageSize
+			},
+			function(data){
+					$('#tbl').datagrid('getPager').pagination({
+						onSelectPage : function(pPageIndex, pPageSize) {
+							//改变oPage的参数值，用于下次查询传给数据层查询指定页码的数据
+							oPage.pageIndex = pPageIndex;
+							oPage.pageSize = pPageSize;
+							$.post(
+									"<?=U('InvoiceManager/getDeliveryListJson')?>",
+									{
+										uName:uName,
+										dstart:dstart,
+										dend:dend,
+										type:type,
+										page:oPage.pageIndex,
+										rows:oPage.pageSize
+									},
+									function(data){
+										$("#tbl").datagrid("loadData",data);
+									},'json'
+							);
+							//异步获取数据到javascript对象，入参为查询条件和页码信息
+							//var oData = getAjaxDate("orderManageBuz","qryWorkOrderPaged",queryCondition,oPage);
+							//使用loadDate方法加载Dao层返回的数据
+							//$('#tt').datagrid('loadData',{"total":oData.page.recordCount,"rows":oData.data});
+							
+						}
+					});
+					$("#tbl").datagrid("loadData",data);
+			},
+			"json"
+		);
+	return false;
+}
+function show(){
+	var selected = $('#tbl').datagrid('getSelections');
+	var id = selected[0].id;
+	if(id == ""){
+		return;
+	}
+	var btns = [{text : "    打印    ",onClick : function(w){w.getIframe().submitForm(w);}},{text : "    确定    ",onClick : function(w){w.close();}}];
+	new Maya.Box({
+		text : "送货单查看",
+		url : "<?=U ( "InvoiceManager/showDeliveryOrder" )?>/id/"+id+"/type/show/uid/0",
+		win : parent,
+		width : 800,
+		height : 220,
+		btns : btns
+	});
+}
+function delOrder(){
+	var selected = $('#tbl').datagrid('getSelections');
+	if(selected.length == 0){
+		Maya.Msg("请选择订单【单击行即可】");
+		return;
+	}
+	if(selected.length > 1){
+		Maya.Msg("未防止误操作，一次只可作废一笔送货单。");
+		return;
+	}
+	if(selected[0].d_status !== 'delivery'){
+		return;
+	}
+	var id = selected[0].id;
+	var title = selected[0].u_company+"<br />送货单号："+selected[0].number;
+	new Maya.Box({
+		text : "送货单作废",
+		chtml : "<b>确定要作废送货单？</b><br />"+title,
+		win : parent,
+		isAlert : true,
+		iframeAuto : false,
+		overlayAlpha : .5,
+		iframeScroll : "auto",
+		inlineAuto : false,
+		type : "inline",
+		btns : [
+			{
+				text : "  确定  ",
+				onClick : function(w){
+					$.post(
+							"<?=U("InvoiceManager/deliveryLabelDel")?>",
+							{id:id,type:'del'},
+							function(data){
+								if(data.status=="1"){
+									top.Maya.Msg({
+										type : "success",
+										msg : "操作成功",
+										call : function(){
+											w.close();
+										}
+									});	
+								}else{
+									top.Maya.Msg(data.info);
+								}
+							},
+							"json"
+						);
+  	       		 }
+			},
+			{
+				text : "  取消  "	,
+				isCancel : true
+			}
+		],
+		onClose:function(){freshIframe();}
+	});	
+}
+function overOrder(){
+	var selected = $('#tbl').datagrid('getSelections');
+	if(selected.length == 0){
+		Maya.Msg("请选择送货单【单击行即可】");
+		return "";
+	}
+	if(selected.length > 1){
+		Maya.Msg("未防止误操作，一次只可操作一笔送货单。");
+		return "";
+	}
+	if(selected[0].d_status !== 'delivery'){
+		return;
+	}
+	var id = selected[0].id;
+	var title = selected[0].u_company+"<br />送货单号："+selected[0].number;
+	new Maya.Box({
+		text : "订单取消",
+		chtml : "<b>确定要结单，结单后讲扣除会员账户余额？</b><br />"+title,
+		win : parent,
+		width:400,
+		isAlert : true,
+		iframeAuto : false,
+		overlayAlpha : .5,
+		iframeScroll : "auto",
+		inlineAuto : false,
+		type : "inline",
+		btns : [
+			{
+				text : "  确定  ",
+				onClick : function(w){
+					$.post(
+							"<?=U("InvoiceManager/deliveryLabelDel")?>",
+							{id:id,type:'over'},
+							function(data){
+								if(data.status=="1"){
+									top.Maya.Msg({
+										type : "success",
+										msg : "操作成功",
+										call : function(){
+											w.close();
+										}
+									});	
+								}else{
+									top.Maya.Msg(data.info);
+								}
+							},
+							"json"
+						);
+  	       		 }
+			},
+			{
+				text : "  取消  "	,
+				isCancel : true
+			}
+		],
+		onClose:function(){freshIframe();}
+	});	
+}
+</script>
+</head>
+<body style="background: none;">
+<div id="dbTool">
+	<a href="#" id="btnedit" class="easyui-linkbutton" iconCls="icon-log" plain="true" onclick="show()">查看详细</a>
+	<!-- <a href="#" class="easyui-linkbutton" iconCls="icon-print" plain="true" onclick="delOrder()">生成送货单</a> -->
+	<a href="#" class="easyui-linkbutton" iconCls="icon-outdepot" plain="true" onclick="overOrder()">已送货结单</a>
+	<!--  --><a href="#" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="delOrder()">送货单作废</a>
+	<a href="#" id="btnUnsel" class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="$('#tbl').datagrid('clearSelections')">取消选中</a>
+	<span style="color: #FF0000; margin-left: 30px;">提示：单击行即可选中(或取消选中)。</span>&nbsp;&nbsp;
+	<label style="color: #1A77C9; margin-left: 30px;"><input type="checkbox" id="choseStatus" name="choseStatus" />&nbsp;待处理状态</label>
+</div>
+<div class="content">
+	<div class="tag">筛选</div>
+	<div class="tagc">
+		<form id="form" method="get">
+			<input type="hidden" name="s" id="s"
+				value="/<?=MODULE_NAME?>/<?=ACTION_NAME?>/" />
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td height="30" align="right"><strong>日期范围：</strong></td>
+					<td colspan="3">
+						<input id="dstart" style="width: 130px;" type="text" class="easyui-datebox" name="dstart" value="<?=date ( "Y-m-d", strtotime ( "-30 day" ) )?>" />
+						— <input id="dend" style="width: 130px;" class="easyui-datebox" type="text" name="dend" value="<?=date ( "Y-m-d")?>" />
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td width="100" height="30" align="right"><strong>用户：</strong></td>
+					<td width="120" align="right">
+						<select id="uName" name="uName" class="input_text" style="width:140px;">
+							<option value="">不限</option>
+							<?php foreach ($Uarr as $rs):?>
+							<option value="<?=$rs['id']?>"><?=$rs['u_name']?></option>
+							<?php endforeach;?>
+						</select>
+					</td>
+					<td width="80" height="30" align="right"><strong>订单状态：</strong></td>
+					<td width="100" align="right">
+						<select id="status" name="status" class="input_text" style="width:140px;">
+							<option value="">不限</option>
+							<?php foreach ($staArr as $rs):?>
+							<option value="<?=$rs['status']?>"><?=$rs['display']?></option>
+							<?php endforeach;?>
+						</select>
+					</td>
+					<td width="100" align="right">
+						<a href="#" class="easyui-linkbutton" onclick="javascript:filterData('');" iconCls="icon-search">搜索</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<table id="tbl">
+		<thead>
+			<tr>
+				<th field="number" align="left" width="100"><strong>编号</strong></th>
+				<th field="status" align="center" width="100"><strong>状态</strong></th>
+				<th field="u_name" align="left" width="100"><strong>制单人员</strong></th>
+				<th field="create_date" align="left" width="150"><strong>制单日期</strong></th>
+				<th field="order_total" align="center" width="60"><strong>订单数</strong></th>
+				<th field="u_company" align="left" width="150"><strong>会员公司</strong></th>
+				<th field="u_manager" align="left" width="100"><strong>会员名称</strong></th>
+				<th field="last_maney" align="left" width="80"><strong>本期结余</strong></th>
+				<th field="now_maney" align="left" width="80"><strong>本期余额</strong></th>
+			</tr>
+		</thead>
+	</table>
+</div>
+</body>
+</html>

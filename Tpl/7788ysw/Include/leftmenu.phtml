@@ -1,0 +1,82 @@
+<div class="easyui-accordion" data-options="fit:true,border:false" style="background: 0 !important; padding: 0px;">
+	<div title="自助下单" iconcls="icon-sys" style="padding: 0px;">
+		<ul>
+			<?php foreach($proArr as $row):?>
+				<li>
+					<div>
+						<a link="<?=U('QuotedPrice/index').'/type/'.$row['p_type'].'/id/'.$row['id']?>"><span
+							class="icon icon-log"></span><?=$row['p_name']?>自助报价</a>
+					</div>
+				</li>
+			<?php endforeach;?>
+		</ul>
+	</div>
+	<?php if(isset($_SESSION ['cmp'])){?>
+	<div title="报价及订单记录" iconcls="icon-sys" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('DataList/offerList')?>"><span class="icon icon-log"></span>报价记录</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('DataList/orderList')?>"><span class="icon icon-log"></span>订单列表</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div title="数据统计" iconcls="icon-sys" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Report/offerList')?>"><span class="icon icon-log"></span>报价统计</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Report/orderList')?>"><span class="icon icon-log"></span>订单统计</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Report/record')?>"><span class="icon icon-log"></span>资金变动记录</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div title="个人信息管理" iconcls="icon-sys" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('MyUser/index')?>"><span class="icon icon-log"></span>个人信息维护</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('MyUser/recharge')?>"><span class="icon icon-log"></span>充值预付款</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<?php }?>
+	<div title="工具" iconcls="icon-sys" style="padding: 0px;">
+		<ul>
+			<li>
+				<div>
+					<a link="<?=U('Tools/zhijia')?>"><span class="icon icon-log"></span>纸价吨令转换</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Tools/shujihoudu')?>"><span class="icon icon-log"></span>书籍厚度计算</a>
+				</div>
+			</li>
+			<li>
+				<div>
+					<a link="<?=U('Tools/zhiban')?>"><span class="icon icon-log"></span>常用制版尺寸表</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>

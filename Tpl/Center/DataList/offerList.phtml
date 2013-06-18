@@ -1,0 +1,122 @@
+<include file="Include:header" />
+<script language="javascript">
+$(document).ready(function(){
+	$('#btnUnsel').linkbutton('disable');
+	initDataGrid("tbl","我的订单列表","<?=U('DataList/getOfferListJson')?>","#dbTool");
+});
+function filterData(){
+	var dstart = $('#dstart').datebox('getValue');
+	var dend   = $('#dend').datebox('getValue');
+	$.post(
+			"<?=U('DataList/getOfferListJson')?>",
+			{
+				dstart:dstart,
+				dend:dend,
+				page:oPage.pageIndex,
+				rows:oPage.pageSize
+			},
+			function(data){
+					$('#tbl').datagrid('getPager').pagination({
+						onSelectPage : function(pPageIndex, pPageSize) {
+							//改变oPage的参数值，用于下次查询传给数据层查询指定页码的数据
+							oPage.pageIndex = pPageIndex;
+							oPage.pageSize = pPageSize;
+							$.post(
+									"<?=U('DataList/getOfferListJson')?>",
+									{
+										dstart:dstart,
+										dend:dend,
+										page:oPage.pageIndex,
+										rows:oPage.pageSize
+									},
+									function(data){
+										$("#tbl").datagrid("loadData",data);
+									},'json'
+							);
+							//异步获取数据到javascript对象，入参为查询条件和页码信息
+							//var oData = getAjaxDate("orderManageBuz","qryWorkOrderPaged",queryCondition,oPage);
+							//使用loadDate方法加载Dao层返回的数据
+							//$('#tt').datagrid('loadData',{"total":oData.page.recordCount,"rows":oData.data});
+							
+						}
+					});
+					$("#tbl").datagrid("loadData",data);
+			},
+			"json"
+		);
+	return false;
+}
+function show(id){
+	var selected = $('#tbl').datagrid('getSelections');
+	if(selected.length > 1 || selected.length == 0){
+		Maya.Msg("未选中，或选中数量超出限制。");
+		return "";
+	}
+	var id = selected[0].id;
+	new Maya.Box({
+		text : "报价详细信息",
+		url : "<?=U ( "DataList/showOffer" )?>/id/"+id,
+		win : parent,
+		width : 700,
+		height : 220,
+		btns : [
+			<?php if($_SESSION ['cmp'] ['g_manager'] == 1):?>
+			{
+				text : ' 详细信息(内部)',
+				onClick : function(w){
+					w.getIframe().showAll(w);
+					// _self.close();
+				}	
+			},
+			<?php endif;?>
+    		{
+				text     : "    确定    ",
+				isCancel : true	
+			}
+		]
+	});
+}
+
+</script>
+</head>
+<body style="background: none;">
+<div id="dbTool">
+	<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="show()">查看详细</a>
+	<a href="#" id="btnUnsel" class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="$('#tbl').datagrid('clearSelections')">取消选中</a>
+	<span style="color: #FF0000; margin-left: 30px;">提示：单击行即可选中(或取消选中)。</span>
+</div>
+<div class="content">
+	<div class="tag">筛选</div>
+	<div class="tagc">
+		<form id="form" method="get">
+			<input type="hidden" name="s" id="s"
+				value="/<?=MODULE_NAME?>/<?=ACTION_NAME?>/" />
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100" height="30" align="right"><strong>日期范围：</strong></td>
+					<td><input id="dstart" type="text" class="easyui-datebox"
+						name="dstart"
+						value="<?=$_GET['dstart'] == "" ? date ( "Y-m-d", strtotime ( "-30 day" ) ) : $_GET['dstart']?>" />
+						— <input id="dend" class="easyui-datebox" type="text" name="dend"
+						value="<?=$_GET['dend'] == "" ? date ( "Y-m-d") : $_GET['dend']?>" />&nbsp;&nbsp;&nbsp;
+						<a href="#" class="easyui-linkbutton"
+						onclick="javascript:filterData();" iconCls="icon-search">搜索</a></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<table id="tbl" data-options="singleSelect:true">
+		<thead>
+			<tr>
+				<th field="p_name" align="left" width="150"><strong>报价项目</strong></th>
+				<th field="o_size" align="left" width="150"><strong>尺寸</strong></th>
+				<th field="o_amount" align="center" width="80"><strong>数量</strong></th>
+				<th field="o_perPrice" align="center" width="100"><strong>单价</strong></th>
+				<th field="o_price" align="center" width="100"><strong>最终报价</strong></th>
+				<th field="o_date" align="left" width="120"><strong>报价时间</strong></th>
+			</tr>
+		</thead>
+	</table>
+</div>
+</body>
+</html>

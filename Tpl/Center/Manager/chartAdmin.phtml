@@ -1,0 +1,108 @@
+<include file="Include:header" />
+<script type="text/javascript" src="__PUBLIC__/Plugin/ficharts/FiCharts.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		//$(".chosen").chosen();
+		/*$("#dend").datebox({
+			//currentText:"今天",//当前日期按钮上显示的文字
+			closeText:"关闭",//关闭按钮上显示的文字
+			okText:"确定",//确定按钮上显示的文字
+			currentText:"",
+			onSelect: function(date){
+				//alert(date.getFullYear()+":"+(date.getMonth()+1)+":"+date.getDate());
+			},
+			formatter:function(date){  
+		        var y = date.getFullYear();  
+		        var m = date.getMonth()+1;  
+		        var d = date.getDate();  
+		        return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+		    }
+		});*/
+
+
+		window.__myChart = new Chart2D({id: 'fichart', width: '100%', height: 380});
+		//checkPOST();
+		/*window.__myChart = new Chart2D({id: 'fichart', width: '100%', height: 480});*/
+		//checkPOST();
+		
+		__myChart.setConfigFile("__PUBLIC__/Plugin/ficharts/config.xml");//myChart.setSize(500, 500);
+		//myChart.render();
+	});
+	function checkPOST(){
+		//if(!checkName($("#terminal_name").val(),$("#areaName").val()){return false;}
+
+		//if(getByteLen($("#terminal_name").val()) > 10){
+			//Maya.MessageBox("输入的 <strong>终端名称</strong> 应限制在5个汉字以内！");
+			//return false;
+		//}
+		var formParam = $("#getData").formSerialize();
+
+		$.post(
+			"<?=U("Report/getXMLContent")?>",
+			formParam,
+			function(data){
+				//console.info(data[1]);
+				window.__myChart = new Chart2D({id: 'fichart', width: '100%', height: 380});
+				window.__myChart.setConfigXML(data[0]);
+				window.__myChart.setJsonData(data[1]);
+				window.__myChart.onClicked(function(e){
+				    //console.info(e.data);
+					if(e.data.seriesName=="违章行为"){
+						new Maya.Box({
+							text : "违章行为",
+							url : "<?=U("Report/getWeiZhang")?>/subId/"+e.data.id,
+							win : parent,
+							width : 900,
+							height : 400,
+							btns : [
+								{
+									text : "    确定    ",
+									isCancel : true	
+								}
+							]
+						});	
+					}
+					return;
+				});
+				window.__myChart.render();
+			},
+			"json"
+		);
+		return false;
+	}
+</script>
+</head>
+<body>
+	<div class="content">
+		<div class="tag">筛选</div>
+		<div class="tagc">
+			<form id="getData">
+				<input type="hidden"  id="id" name="id" value="<?=$_GET['id']?>" />
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="50" align="right"><strong>日期：</strong></td>
+						<td><input id="dstart" type="text" class="input_text easyui-datebox"
+							name="dstart" value="<?=$_GET['dstart'] == "" ? date ( "Y-m-d", strtotime ( "-30 day" ) ) : $_GET['dstart']?>" /> — <input id="dend"
+							class="input_text easyui-datebox" type="text" name="dend"
+							value="<?=$_GET['dend'] == "" ? date ( "Y-m-d") : $_GET['dend']?>" />&nbsp;</td>
+						<td><a href="#" class="easyui-linkbutton" onclick="checkPOST()"
+							iconCls="icon-search">查询</a>
+							 <!-- <input type="submit" class="maya_btn search_btn"  value="搜索" />
+							<input type="submit" class="maya_btn add_btn"  value="搜索" />
+							<input type="submit" class="maya_btn export_btn"  value="搜索" />
+							<input type="submit" class="maya_btn import_btn"  value="搜索" />
+							<input type="submit" class="maya_btn delete_btn"  value="搜索" />
+							<input type="submit" class="maya_btn btn_dark"  value="搜索" /> -->
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="fichart" style="padding: 0; overflow: auto; height: 380px;">
+			<div
+				style="margin: 0 auto; font-size: 23px; text-align: center; padding: 10px 0;">暂无数据</div>
+		</div>
+	</div>
+</body>
+</html>
