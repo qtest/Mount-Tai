@@ -1,6 +1,6 @@
 Mount-Tai
-=========
-清空可变测试数据
+========
+truncate some tables sql:
 TRUNCATE TABLE pt_offer;
 TRUNCATE TABLE pt_offerfull;
 TRUNCATE TABLE pt_order;
