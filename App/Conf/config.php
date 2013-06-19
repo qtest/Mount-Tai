@@ -7,7 +7,7 @@ return array(
 	'DEFAULT_GROUP'         =>    '7788ysw', //默认分组
 	"DB_TYPE"               =>    "mysql",
 	"DB_HOST"               =>    "127.0.0.1",
-	'DB_NAME'               =>    '7788ysw', // 数据库名
+	'DB_NAME'               =>    '7788ysw-view', // 数据库名
 	"DB_USER"               =>    "root",//用户名
 	"DB_PWD"                =>    "",// 密码
 	'DB_PREFIX'             =>    '',// 数据库表前缀
