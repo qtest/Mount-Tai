@@ -1,4 +1,5 @@
 Mount-Tai
+project name：7788ysw
 ========
 truncate some tables sql:
 TRUNCATE TABLE pt_offer;
